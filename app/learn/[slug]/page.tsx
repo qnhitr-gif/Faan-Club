@@ -57,7 +57,7 @@ export default function ChapterPage({ params }: { params: { slug: string } }) {
           <p className="font-serif italic text-lead text-secondary">{chapter.description}</p>
         </header>
         <div>
-          <MDXRemote source={chapter.source} components={mdxComponents as any} />
+          <MDXRemote source={chapter.source} components={mdxComponents as any} options={{ blockJS: false }} />
         </div>
       </article>
 
