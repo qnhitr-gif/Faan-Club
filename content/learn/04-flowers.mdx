@@ -1,0 +1,39 @@
+---
+number: 4
+slug: flowers
+title: Flowers and seasons
+description: The eight bonus tiles. They never sit in your hand — they reveal themselves and earn you a free draw.
+readingTime: 3 min
+---
+
+The last 8 tiles are the *bonus* tiles: four flowers and four seasons, one of each. There's only one of each, not four — making them the only tiles in the set without duplicates.
+
+<TileRow tiles={[
+  { suit: 'flower', value: 1 },
+  { suit: 'flower', value: 2 },
+  { suit: 'flower', value: 3 },
+  { suit: 'flower', value: 4 },
+]} />
+
+<TileRow tiles={[
+  { suit: 'season', value: 1 },
+  { suit: 'season', value: 2 },
+  { suit: 'season', value: 3 },
+  { suit: 'season', value: 4 },
+]} />
+
+The four flowers are plum, orchid, chrysanthemum, and bamboo. The four seasons are spring, summer, autumn, winter. Each is numbered one through four, and the number corresponds to a seat: 1 = east, 2 = south, 3 = west, 4 = north.
+
+## How they're played
+
+When you draw a flower or season, you don't keep it in your hand. You set it aside, face-up, in front of you, and immediately draw a *replacement tile* from the back of the wall. That replacement is the tile that goes into your hand.
+
+The bonus tile is purely scoring — a small bonus at the end of the round. If the number on your bonus tile matches your seat (you sat south and drew season 2, for example), the bonus is doubled.
+
+<Callout>
+You can finish a hand and win without ever drawing a flower or season. Plenty of hands are decided before any bonus tiles come out.
+</Callout>
+
+## The full count
+
+108 suited + 28 honors + 8 bonus = 144 tiles. That's the whole set.

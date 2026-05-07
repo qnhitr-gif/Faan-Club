@@ -1,0 +1,69 @@
+---
+number: 2
+slug: tiles
+title: The tiles
+description: Three suits, ranked one through nine. The same shape repeats — once you see it, you've got the bulk of the set.
+readingTime: 4 min
+---
+
+A mahjong set has 144 tiles. That sounds like a lot, but the structure is regular: three suits ranked one through nine, four copies of each. That's 108 of the 144 right there. The remaining 36 are honors and bonus tiles, which we'll cover in the next two chapters.
+
+## The three suits
+
+The suits are *dots*, *bamboo*, and *characters*. Every tile in a suit is numbered one through nine.
+
+### Dots (筒)
+
+Circles, arranged in mahjong-standard patterns. The 1-dot is a single large circle; counts go up from there.
+
+<TileRow tiles={[
+  { suit: 'dot', value: 1 },
+  { suit: 'dot', value: 2 },
+  { suit: 'dot', value: 3 },
+  { suit: 'dot', value: 4 },
+  { suit: 'dot', value: 5 },
+  { suit: 'dot', value: 6 },
+  { suit: 'dot', value: 7 },
+  { suit: 'dot', value: 8 },
+  { suit: 'dot', value: 9 },
+]} size="sm" />
+
+### Bamboo (索)
+
+Vertical sticks, again in standard arrangements. The 1-bamboo is the famous exception — traditionally it's a stylized sparrow rather than a single stick.
+
+<TileRow tiles={[
+  { suit: 'bamboo', value: 1 },
+  { suit: 'bamboo', value: 2 },
+  { suit: 'bamboo', value: 3 },
+  { suit: 'bamboo', value: 4 },
+  { suit: 'bamboo', value: 5 },
+  { suit: 'bamboo', value: 6 },
+  { suit: 'bamboo', value: 7 },
+  { suit: 'bamboo', value: 8 },
+  { suit: 'bamboo', value: 9 },
+]} size="sm" />
+
+### Characters (萬)
+
+Numerals on top, the character 萬 ("ten thousand") on the bottom. The numerals are the traditional Chinese forms — 一 through 九.
+
+<TileRow tiles={[
+  { suit: 'character', value: 1 },
+  { suit: 'character', value: 2 },
+  { suit: 'character', value: 3 },
+  { suit: 'character', value: 4 },
+  { suit: 'character', value: 5 },
+  { suit: 'character', value: 6 },
+  { suit: 'character', value: 7 },
+  { suit: 'character', value: 8 },
+  { suit: 'character', value: 9 },
+]} size="sm" />
+
+## Terminals and simples
+
+Ones and nines are *terminals*. Two through eight are *simples*. This distinction matters in scoring — a hand made entirely of terminals and honors is worth much more than the same hand structure with simples in it.
+
+<Callout>
+Don't try to memorize anything yet. Just look. Once you've seen each suit a few times, you'll start to recognize them on the table without thinking.
+</Callout>

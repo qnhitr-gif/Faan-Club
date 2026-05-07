@@ -1,0 +1,61 @@
+---
+number: 5
+slug: hand
+title: How a hand is built
+description: Four sets and a pair. That's it. Once you see the shape, the rest of the rules fall into place.
+readingTime: 4 min
+---
+
+A winning mahjong hand is fourteen tiles, organized into a specific shape: **four sets and a pair**.
+
+## The pair
+
+Two identical tiles. Any tile in the set will do — a pair of 5-bamboo, a pair of east winds, a pair of red dragons. You only need one pair in your final hand.
+
+<TileRow tiles={[
+  { suit: 'dragon', value: 'red' },
+  { suit: 'dragon', value: 'red' },
+]} />
+
+## The sets
+
+Each set is *three tiles*. There are two kinds.
+
+### Pung (碰) — three of a kind
+
+Three identical tiles. Always allowed.
+
+<TileRow tiles={[
+  { suit: 'character', value: 5 },
+  { suit: 'character', value: 5 },
+  { suit: 'character', value: 5 },
+]} />
+
+### Chow (上) — three in a row
+
+Three consecutive tiles in the *same suit*. 4-5-6 dots. 7-8-9 bamboo. Never across suits, and never with honors.
+
+<TileRow tiles={[
+  { suit: 'dot', value: 4 },
+  { suit: 'dot', value: 5 },
+  { suit: 'dot', value: 6 },
+]} />
+
+### Kong (槓) — four of a kind
+
+A bonus set: all four copies of the same tile. A kong counts as one set, not two — but it requires you to draw a replacement tile, much like a flower. Kongs are scored generously.
+
+<TileRow tiles={[
+  { suit: 'wind', value: 'east' },
+  { suit: 'wind', value: 'east' },
+  { suit: 'wind', value: 'east' },
+  { suit: 'wind', value: 'east' },
+]} />
+
+## Putting it together
+
+Four sets plus a pair = 4 × 3 + 2 = **14 tiles**. That's a winning hand, exactly. While you're playing, your hand is 13 tiles. On the turn you complete it — by drawing or claiming the right tile — it becomes 14, and you declare a win.
+
+<Callout title="Edge cases later">
+A handful of special hands break this shape — *thirteen orphans*, *seven pairs* — and we'll mention them in scoring. For now, four-and-a-pair is everything you need.
+</Callout>
