@@ -14,7 +14,7 @@ export interface Chapter extends ChapterMeta {
   source: string;
 }
 
-const CONTENT_DIR = '/Users/louietran/mahjong-school/content/learn';
+const CONTENT_DIR = path.join(process.cwd(), 'content/learn');
 
 export function listChapters(): ChapterMeta[] {
   const files = fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith('.mdx'));
