@@ -1,12 +1,10 @@
 import type { Config } from 'tailwindcss';
 
-const ROOT = '/Users/louietran/mahjong-school';
-
 const config: Config = {
   content: [
-    `${ROOT}/app/**/*.{ts,tsx,mdx}`,
-    `${ROOT}/components/**/*.{ts,tsx}`,
-    `${ROOT}/content/**/*.{md,mdx}`,
+    './app/**/*.{ts,tsx,mdx}',
+    './components/**/*.{ts,tsx}',
+    './content/**/*.{md,mdx}',
   ],
   darkMode: 'class',
   theme: {
