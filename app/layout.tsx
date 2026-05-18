@@ -42,20 +42,11 @@ export const metadata: Metadata = {
     title: 'Faan Club — Learn Hong Kong Mahjong, One Bite at a Time',
     description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
     url: 'https://faanclub.vercel.app',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Faan Club — Learn Hong Kong Mahjong',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Faan Club — Learn Hong Kong Mahjong, One Bite at a Time',
     description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
-    images: ['/og-image.png'],
   },
   robots: {
     index: true,
