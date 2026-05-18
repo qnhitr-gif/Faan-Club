@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 
 export interface ChapterMeta {
@@ -17,7 +16,7 @@ export interface Chapter extends ChapterMeta {
   source: string;
 }
 
-const CONTENT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../content/learn');
+const CONTENT_DIR = path.join(process.cwd(), 'content/learn');
 
 export function listChapters(): ChapterMeta[] {
   const files = fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith('.mdx'));
