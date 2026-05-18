@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Faan Club',
-    title: 'Faan Club — Learn Hong Kong Mahjong',
+    title: 'Faan Club — Learn Hong Kong Mahjong, One Bite at a Time',
     description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
     url: 'https://faanclub.vercel.app',
     images: [
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Faan Club — Learn Hong Kong Mahjong',
+    title: 'Faan Club — Learn Hong Kong Mahjong, One Bite at a Time',
     description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
     images: ['/og-image.png'],
   },
