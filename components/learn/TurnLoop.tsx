@@ -171,6 +171,55 @@ export function TurnLoop() {
         </div>
       </div>
 
+      {/* Two callout cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}
+        className="callout-grid"
+      >
+        {/* See it in action */}
+        <div style={{
+          borderRadius: 10,
+          border: '1px solid rgba(35,88,54,0.18)',
+          background: 'rgba(35,88,54,0.03)',
+          padding: '20px 22px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: G7, flexShrink: 0 }} />
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: INK }}>
+              See it in action
+            </span>
+          </div>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: 14.5, lineHeight: 1.7, color: INK2, margin: 0 }}>
+            The setup process is easier to grasp in motion than in words. The{' '}
+            <strong style={{ fontWeight: 600, color: INK }}>interactive room</strong>{' '}
+            walks you through every step — seat selection, dice roll, wall break, and deal — one click at a time.{' '}
+            <a href="/kitchen/setup" style={{ color: G7, textDecoration: 'underline', textUnderlineOffset: 3 }}>
+              Go to the interactive room →
+            </a>
+          </p>
+        </div>
+
+        {/* Where the depth lives */}
+        <div style={{
+          borderRadius: 10,
+          border: '1px solid rgba(184,48,42,0.18)',
+          background: 'rgba(184,48,42,0.02)',
+          padding: '20px 22px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: R, flexShrink: 0 }} />
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: INK }}>
+              Where the depth lives
+            </span>
+          </div>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: 14.5, lineHeight: 1.7, color: INK2, margin: 0 }}>
+            Most of mahjong&apos;s richness is in the <em style={{ fontStyle: 'italic' }}>decide</em> step.
+            A new tile arrives and you must choose: discard the new one and stay the course?
+            Break up an old plan for a better one? Hold something dangerous because it&apos;s
+            the only path to a high-scoring hand?
+          </p>
+        </div>
+      </div>
+
       <style>{`
         @media (max-width: 640px) {
           .turn-grid {
