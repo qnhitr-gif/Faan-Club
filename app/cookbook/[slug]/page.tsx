@@ -31,6 +31,7 @@ import { WinningHand, MeldGrid, MeldCard } from '@/components/learn/HandParts';
 import { TilesChapter } from '@/components/learn/TilesChapter';
 import { HowARoundFlows } from '@/components/learn/HowARoundFlows';
 import { ChapterHeader } from '@/components/learn/ChapterHeader';
+import { TurnLoop } from '@/components/learn/TurnLoop';
 
 const mdxComponents = {
   Tile,
@@ -48,6 +49,10 @@ const mdxComponents = {
   GameFlow, WelcomeIntro, Split, SplitCol, MissionBlock,
   WelcomeChapter,
   HowARoundFlows,
+  TurnLoop,
+  TwoCol: ({ children }: { children: React.ReactNode }) => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, margin: '24px 0' }}>{children}</div>
+  ),
   WinningHand, MeldGrid, MeldCard,
   ChapterHeader,
   CallCosts,
