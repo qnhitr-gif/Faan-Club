@@ -29,8 +29,38 @@ const display = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: 'Faan Club',
-  description: 'A patient guide to Hong Kong mahjong, taught at the table.',
+  metadataBase: new URL('https://faanclub.vercel.app'),
+  title: {
+    default: 'Faan Club',
+    template: '%s · Faan Club',
+  },
+  description: 'A patient guide to Hong Kong mahjong, taught at the table. Learn the rules, practice with drills, and find a club near you.',
+  keywords: ['mahjong', 'Hong Kong mahjong', 'learn mahjong', 'mahjong rules', 'Cantonese mahjong', 'HK mahjong'],
+  openGraph: {
+    type: 'website',
+    siteName: 'Faan Club',
+    title: 'Faan Club — Learn Hong Kong Mahjong',
+    description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
+    url: 'https://faanclub.vercel.app',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Faan Club — Learn Hong Kong Mahjong',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Faan Club — Learn Hong Kong Mahjong',
+    description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
