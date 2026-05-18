@@ -1,0 +1,91 @@
+---
+number: 12
+slug: defensive-play
+title: Defensive play
+description: When to fold, how to find safe tiles, suji and kabe basics, and managing a losing hand with discipline.
+readingTime: 6 min
+hideHeader: true
+---
+
+<ChapterHeader n={12} plain="When to" italic="fold." />
+
+Most mahjong strategy is about winning. Defensive play is about *not losing* — specifically, not being the player whose discard completes an opponent's hand. Over a long session, the players who lose least tend to finish ahead of the players who win most.
+
+<Section n={1} title="When to fold">
+
+Folding means abandoning your hand plan and switching to purely safe discards until the round ends. It costs you the round's win potential but protects against large payments.
+
+<Stages>
+  <Stage n={1} name="Fold immediately" wall="" turns="" tone="red">
+    Any opponent has three exposed sets. They need only one more tile. Any discard from you is high-risk.
+  </Stage>
+  <Stage n={2} name="Consider folding" wall="&lt;20" turns="" tone="amber">
+    Wall under 20 tiles and your hand is still 2+ shanten. You likely won't reach tenpai in time — defend now.
+  </Stage>
+  <Stage n={3} name="Evaluate" wall="" turns="" tone="green">
+    Holding demonstrably dangerous tiles with a marginal hand. Ask: is the potential win worth the payment risk?
+  </Stage>
+</Stages>
+
+<Callout title="Folding is not giving up">
+A fold that avoids paying 6 faan is worth more than winning at 3 faan. Players who can't fold when they should consistently overpay across a session.
+</Callout>
+
+</Section>
+
+<Section n={2} title="Finding safe tiles">
+
+<Pillars>
+  <Pillar n={1} title="Already-discarded tiles">
+    If an opponent has already thrown a tile, that exact tile is almost never their winning tile. Copy their discards back under pressure — this is the safest category.
+  </Pillar>
+  <Pillar n={2} title="Dead tiles">
+    A tile with 3 copies visible has only 1 remaining. Four copies visible means completely safe — it cannot be anyone's wait.
+  </Pillar>
+  <Pillar n={3} title="1-4-7 neighbors">
+    If an opponent threw a 4, tiles 1 and 7 in the same suit are probably not their winning tiles either. (See chapter 10 for full reasoning.)
+  </Pillar>
+  <Pillar n={4} title="Pair duplicates">
+    If you're folding, discarding one tile from your own pair is relatively safe — you know exactly how many copies are visible.
+  </Pillar>
+</Pillars>
+
+</Section>
+
+<Section n={3} title="Suji — inferring safe tiles from discards">
+
+*Suji* (筋) extends the 1-4-7 logic into a structured inference. When an opponent discards a tile, you can infer which tiles they are *probably* not waiting on.
+
+If they discarded a **4**, they weren't holding 2–3 (they'd have wanted the 4 to complete 2–3–4) or 5–6 (they'd have wanted the 4 for 4–5–6). So tiles **1** and **7** in the same suit are likely safe — suji of the 4.
+
+<Compare>
+  <CompareSide title="The six suji pairs" tone="neutral">
+    1 ↔ 4, 4 ↔ 7 (the 1-4-7 family)
+
+    2 ↔ 5, 5 ↔ 8 (the 2-5-8 family)
+
+    3 ↔ 6, 6 ↔ 9 (the 3-6-9 family)
+  </CompareSide>
+  <CompareSide title="When suji fails" tone="cautious">
+    Suji doesn't cover pair waits, edge waits, or special hand shapes. An opponent could be waiting on an isolated pair that breaks the chow-logic assumption entirely. Treat suji as a probability filter, not a guarantee.
+  </CompareSide>
+</Compare>
+
+</Section>
+
+<Section n={4} title="Managing a losing hand">
+
+When your hand clearly won't win — too far from tenpai, dangerous tiles to hold, strong opponents building fast — manage the loss rather than the win.
+
+<Checklist items={[
+  "Stop advancing your hand. Every new tile goes into safe-discard evaluation, not building.",
+  "Prioritize tiles that have been discarded by the most dangerous player.",
+  "Hold onto your safe tiles longer than feels right — being stuck beats paying.",
+  "If two players are both dangerous, find the tile that's safe against both and hold it as long as possible.",
+]} />
+
+<Callout title="Defense improves gradually">
+Most players develop offensive skills first and defensive skills years later. If you consciously practice the fold decision — even just learning to recognize three exposures — you're ahead of most beginners at the table.
+</Callout>
+
+</Section>

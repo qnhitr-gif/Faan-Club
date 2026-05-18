@@ -1,0 +1,412 @@
+import type { SuitedValue } from '@/lib/tiles';
+
+export type QuizSuit = 'bamboo' | 'dot' | 'character';
+export type QuizTier = 1 | 2 | 3 | 4 | 5;
+export type QuizTarget = '1 set + pair' | '2 sets + pair' | '2 sets';
+
+export interface Question {
+  id: string;
+  tier: QuizTier;
+  pattern: string;
+  target: QuizTarget;
+  tiles: SuitedValue[];
+  suit: QuizSuit;
+  correct: number;
+  opts: string[];
+  answer: string;
+  exp: string;
+  splits: string[];
+}
+
+export const SUIT_LABEL: Record<QuizSuit, string> = {
+  bamboo: 'Bam',
+  dot: 'Dot',
+  character: 'Char',
+};
+
+export const TIER_NAMES: Record<QuizTier, string> = {
+  1: 'Adjacent triples',
+  2: 'Gap triples',
+  3: 'Five-in-a-rows',
+  4: 'Mixed shapes',
+  5: 'Complex blocks',
+};
+
+export const QUESTIONS: Question[] = [
+  // ── Tier 1 — Adjacent triple ─────────────────────────────────────────────
+  {
+    id: 't1-a',
+    tier: 1,
+    pattern: 'Adjacent triple',
+    target: '1 set + pair',
+    tiles: [2, 2, 2, 3],
+    suit: 'bamboo',
+    correct: 2,
+    opts: ['1 or 4', '2 or 3', '1, 3, or 4', '3 or 4'],
+    answer: '1, 3, or 4',
+    exp: 'Three winning tiles: chow below (1), pung the triple + pair the Y (3), chow above (4).',
+    splits: [
+      '1 → 1-2-3 chow + pair of 2s',
+      '3 → pung of 2s + pair of 3s',
+      '4 → 2-3-4 chow + pair of 2s',
+    ],
+  },
+  {
+    id: 't1-b',
+    tier: 1,
+    pattern: 'Adjacent triple',
+    target: '1 set + pair',
+    tiles: [5, 5, 5, 6],
+    suit: 'dot',
+    correct: 3,
+    opts: ['5 or 6', '4 or 7', '6 or 7', '4, 6, or 7'],
+    answer: '4, 6, or 7',
+    exp: 'Three winning tiles.',
+    splits: [
+      '4 → 4-5-6 chow + pair of 5s',
+      '6 → pung of 5s + pair of 6s',
+      '7 → 5-6-7 chow + pair of 5s',
+    ],
+  },
+  {
+    id: 't1-c',
+    tier: 1,
+    pattern: 'Adjacent triple',
+    target: '1 set + pair',
+    tiles: [7, 7, 7, 8],
+    suit: 'character',
+    correct: 1,
+    opts: ['7 or 8', '6, 8, or 9', '8 or 9', '6 or 9'],
+    answer: '6, 8, or 9',
+    exp: 'Three winning tiles.',
+    splits: [
+      '6 → 6-7-8 chow + pair of 7s',
+      '8 → pung of 7s + pair of 8s',
+      '9 → 7-8-9 chow + pair of 7s',
+    ],
+  },
+
+  // ── Tier 2 — Gap triple ──────────────────────────────────────────────────
+  {
+    id: 't2-a',
+    tier: 2,
+    pattern: 'Gap triple',
+    target: '1 set + pair',
+    tiles: [4, 4, 4, 6],
+    suit: 'bamboo',
+    correct: 3,
+    opts: ['4 or 6', '3 or 4', '4 or 5', '5 or 6'],
+    answer: '5 or 6',
+    exp: 'Two winning tiles: bridge (5) completes a chow; duplicate of 6 makes pung + pair.',
+    splits: [
+      '5 → 4-5-6 chow + pair of 4s',
+      '6 → pung of 4s + pair of 6s',
+    ],
+  },
+  {
+    id: 't2-b',
+    tier: 2,
+    pattern: 'Gap triple',
+    target: '1 set + pair',
+    tiles: [2, 2, 2, 4],
+    suit: 'dot',
+    correct: 2,
+    opts: ['2 or 4', '1 or 4', '3 or 4', '2 or 3'],
+    answer: '3 or 4',
+    exp: 'Two winning tiles.',
+    splits: [
+      '3 → 2-3-4 chow + pair of 2s',
+      '4 → pung of 2s + pair of 4s',
+    ],
+  },
+  {
+    id: 't2-c',
+    tier: 2,
+    pattern: 'Gap triple',
+    target: '1 set + pair',
+    tiles: [3, 3, 3, 5],
+    suit: 'character',
+    correct: 0,
+    opts: ['4 or 5', '3 or 5', '3 or 4', '5 or 6'],
+    answer: '4 or 5',
+    exp: 'Two winning tiles.',
+    splits: [
+      '4 → 3-4-5 chow + pair of 3s',
+      '5 → pung of 3s + pair of 5s',
+    ],
+  },
+
+  // ── Tier 3 — Five-in-a-row ───────────────────────────────────────────────
+  {
+    id: 't3-a',
+    tier: 3,
+    pattern: 'Five-in-a-row',
+    target: '2 sets',
+    tiles: [2, 3, 4, 5, 6],
+    suit: 'bamboo',
+    correct: 1,
+    opts: ['2, 5, or 8', '1, 4, or 7', '3, 6, or 9', '1 or 7'],
+    answer: '1, 4, or 7',
+    exp: 'Three-way wait: tile below start, middle tile, tile above end.',
+    splits: [
+      '1 → 1-2-3 chow + 4-5-6 chow',
+      '4 → 2-3-4 chow + 4-5-6 chow',
+      '7 → 2-3-4 chow + 5-6-7 chow',
+    ],
+  },
+  {
+    id: 't3-b',
+    tier: 3,
+    pattern: 'Five-in-a-row',
+    target: '2 sets',
+    tiles: [3, 4, 5, 6, 7],
+    suit: 'dot',
+    correct: 0,
+    opts: ['2, 5, or 8', '1, 4, or 7', '3, 6, or 9', '2 or 8'],
+    answer: '2, 5, or 8',
+    exp: 'Three-way wait.',
+    splits: [
+      '2 → 2-3-4 chow + 5-6-7 chow',
+      '5 → 3-4-5 chow + 5-6-7 chow',
+      '8 → 3-4-5 chow + 6-7-8 chow',
+    ],
+  },
+  {
+    id: 't3-c',
+    tier: 3,
+    pattern: 'Five-in-a-row',
+    target: '2 sets',
+    tiles: [4, 5, 6, 7, 8],
+    suit: 'character',
+    correct: 3,
+    opts: ['2, 5, or 8', '1, 4, or 7', '4, 6, or 9', '3, 6, or 9'],
+    answer: '3, 6, or 9',
+    exp: 'Three-way wait.',
+    splits: [
+      '3 → 3-4-5 chow + 6-7-8 chow',
+      '6 → 4-5-6 chow + 6-7-8 chow',
+      '9 → 4-5-6 chow + 7-8-9 chow',
+    ],
+  },
+  {
+    id: 't3-d',
+    tier: 3,
+    pattern: 'Five-in-a-row (edge)',
+    target: '2 sets',
+    tiles: [1, 2, 3, 4, 5],
+    suit: 'bamboo',
+    correct: 2,
+    opts: ['1, 3, or 6', '2, 4, or 7', '3 or 6', '1, 4, or 7'],
+    answer: '3 or 6',
+    exp: 'Two-way wait — block starts at 1, so no tile below. Middle (3) and tile above end (6) only.',
+    splits: [
+      '3 → 1-2-3 chow + 3-4-5 chow',
+      '6 → 1-2-3 chow + 4-5-6 chow',
+    ],
+  },
+  {
+    id: 't3-e',
+    tier: 3,
+    pattern: 'Five-in-a-row (edge)',
+    target: '2 sets',
+    tiles: [5, 6, 7, 8, 9],
+    suit: 'dot',
+    correct: 1,
+    opts: ['3, 6, or 9', '4 or 7', '5, 7, or 9', '3 or 9'],
+    answer: '4 or 7',
+    exp: 'Two-way wait — block ends at 9, no tile above. Tile below start (4) and middle (7) only.',
+    splits: [
+      '4 → 4-5-6 chow + 7-8-9 chow',
+      '7 → 5-6-7 chow + 7-8-9 chow',
+    ],
+  },
+
+  // ── Tier 4 — Shanpon, Nobetan, pair + chow, tricky singles ───────────────
+  {
+    id: 't4-a',
+    tier: 4,
+    pattern: 'Shanpon',
+    target: '1 set + pair',
+    tiles: [3, 3, 7, 7],
+    suit: 'dot',
+    correct: 2,
+    opts: ['5 or 6', '3, 5, or 7', '3 or 7', '7 only'],
+    answer: '3 or 7',
+    exp: 'Double pair wait. Whichever tile drawn, one pair becomes a pung, the other stays.',
+    splits: [
+      '3 → pung of 3s + pair of 7s',
+      '7 → pair of 3s + pung of 7s',
+    ],
+  },
+  {
+    id: 't4-b',
+    tier: 4,
+    pattern: 'Shanpon',
+    target: '1 set + pair',
+    tiles: [2, 2, 9, 9],
+    suit: 'character',
+    correct: 1,
+    opts: ['2, 5, or 9', '2 or 9', '9 only', '5 or 6'],
+    answer: '2 or 9',
+    exp: 'Double pair wait.',
+    splits: [
+      '2 → pung of 2s + pair of 9s',
+      '9 → pair of 2s + pung of 9s',
+    ],
+  },
+  {
+    id: 't4-c',
+    tier: 4,
+    pattern: 'Nobetan',
+    target: '1 set + pair',
+    tiles: [3, 4, 5, 6],
+    suit: 'bamboo',
+    correct: 3,
+    opts: ['2 or 7', '3, 4, 5, or 6', '4 or 5', '3 or 6'],
+    answer: '3 or 6',
+    exp: 'End tiles flip between being the pair and part of the chow.',
+    splits: [
+      '3 → 4-5-6 chow + pair of 3s',
+      '6 → 3-4-5 chow + pair of 6s',
+    ],
+  },
+  {
+    id: 't4-d',
+    tier: 4,
+    pattern: 'Nobetan',
+    target: '1 set + pair',
+    tiles: [5, 6, 7, 8],
+    suit: 'dot',
+    correct: 0,
+    opts: ['5 or 8', '4 or 9', '6 or 7', '4, 6, or 9'],
+    answer: '5 or 8',
+    exp: 'End tiles are the winning tiles.',
+    splits: [
+      '5 → 6-7-8 chow + pair of 5s',
+      '8 → 5-6-7 chow + pair of 8s',
+    ],
+  },
+  {
+    id: 't4-e',
+    tier: 4,
+    pattern: 'Pair + chow',
+    target: '1 set + pair',
+    tiles: [1, 1, 2, 3],
+    suit: 'character',
+    correct: 2,
+    opts: ['1 or 2', '2 or 4', '1 or 4', '1, 2, or 3'],
+    answer: '1 or 4',
+    exp: 'Pair anchors as the pair; sequential tiles wait two-sided.',
+    splits: [
+      '1 → 1-2-3 chow + pair of 1s',
+      '4 → 2-3-4 chow + pair of 1s',
+    ],
+  },
+  {
+    id: 't4-f',
+    tier: 4,
+    pattern: 'Pair + chow',
+    target: '1 set + pair',
+    tiles: [6, 6, 7, 8],
+    suit: 'bamboo',
+    correct: 1,
+    opts: ['6 or 8', '6 or 9', '7 or 8', '5 or 9'],
+    answer: '6 or 9',
+    exp: 'Pair of 6s anchors; 7-8 block waits two-sided.',
+    splits: [
+      '6 → 6-7-8 chow + pair of 6s',
+      '9 → 7-8-9 chow + pair of 6s',
+    ],
+  },
+  {
+    id: 't4-g',
+    tier: 4,
+    pattern: 'Tricky single',
+    target: '1 set + pair',
+    tiles: [7, 8, 8, 9],
+    suit: 'dot',
+    correct: 3,
+    opts: ['7 or 9', '6, 8, or 9', '7, 8, or 9', '8 only'],
+    answer: '8 only',
+    exp: 'One winning tile. 7 and 9 look plausible but produce no clean split.',
+    splits: [
+      '8 → 7-8-9 chow + pair of 8s',
+      '7 → 7-7-8-8-9: no valid set + pair split',
+      '9 → 7-8-8-9-9: no valid set + pair split',
+    ],
+  },
+  {
+    id: 't4-h',
+    tier: 4,
+    pattern: 'Tricky single',
+    target: '1 set + pair',
+    tiles: [1, 2, 2, 3],
+    suit: 'character',
+    correct: 0,
+    opts: ['2 only', '1 or 4', '1 or 2', '2 or 3'],
+    answer: '2 only',
+    exp: 'One winning tile. Drawing 1 or 4 leaves an unpaired tile.',
+    splits: [
+      '2 → 1-2-3 chow + pair of 2s',
+      '1 → 1-1-2-2-3: 1-2-3 + 1-2? (not a pair)',
+      '4 → 1-2-2-3-4: 2-3-4 + 1-2? (not a pair)',
+    ],
+  },
+
+  // ── Tier 5 — Complex 7-tile blocks ───────────────────────────────────────
+  {
+    id: 't5-a',
+    tier: 5,
+    pattern: 'Complex block',
+    target: '2 sets + pair',
+    tiles: [2, 2, 2, 3, 3, 4, 4],
+    suit: 'bamboo',
+    correct: 2,
+    opts: ['3 or 4 only', '2, 4, or 5', '2, 3, 4, or 5', '1, 2, or 5'],
+    answer: '2, 3, 4, or 5',
+    exp: 'Four winning tiles, each enabling a different meld structure.',
+    splits: [
+      '2 → 2-3-4 chow + 2-3-4 chow + pair of 2s',
+      '3 → pung of 2s + pung of 3s + pair of 4s',
+      '4 → pung of 4s + pung of 2s + pair of 3s',
+      '5 → 3-4-5 chow + 2-3-4 chow + pair of 2s',
+    ],
+  },
+  {
+    id: 't5-b',
+    tier: 5,
+    pattern: 'Complex block',
+    target: '2 sets + pair',
+    tiles: [2, 2, 2, 3, 3, 3, 4],
+    suit: 'dot',
+    correct: 3,
+    opts: ['3 or 4 only', '3, 4, or 5', '1, 2, or 5', '2, 3, 4, or 5'],
+    answer: '2, 3, 4, or 5',
+    exp: 'Four winning tiles.',
+    splits: [
+      '2 → 2-3-4 chow + pung of 2s + pair of 3s',
+      '3 → 2-3-4 chow + pung of 3s + pair of 2s',
+      '4 → pung of 2s + pung of 3s + pair of 4s',
+      '5 → 3-4-5 chow + pung of 2s + pair of 3s',
+    ],
+  },
+  {
+    id: 't5-c',
+    tier: 5,
+    pattern: 'Complex block',
+    target: '2 sets + pair',
+    tiles: [2, 2, 2, 3, 4, 5, 6],
+    suit: 'character',
+    correct: 1,
+    opts: ['1, 4, or 7 only', '1, 3, 4, 6, or 7', '2, 3, 4, 5, or 6', '1 or 7 only'],
+    answer: '1, 3, 4, 6, or 7',
+    exp: 'Five winning tiles. Pung of 2s can anchor many chow combinations.',
+    splits: [
+      '1 → 1-2-3 chow + 4-5-6 chow + pair of 2s',
+      '3 → 4-5-6 chow + pung of 2s + pair of 3s',
+      '4 → 2-3-4 chow + 4-5-6 chow + pair of 2s',
+      '6 → pung of 2s + 3-4-5 chow + pair of 6s',
+      '7 → 2-3-4 chow + 5-6-7 chow + pair of 2s',
+    ],
+  },
+];

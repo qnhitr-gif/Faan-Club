@@ -65,6 +65,32 @@ export function tileLabel(face: TileFace): string {
   }
 }
 
+const WIND_NUM: Record<WindValue, number> = { east: 1, south: 2, west: 3, north: 4 };
+const DRAGON_NUM: Record<DragonValue, number> = { red: 1, green: 2, white: 3 };
+
+export function tileFileName(face: TileFace): string {
+  switch (face.suit) {
+    case 'bamboo':
+      return `MJs${face.value}-.svg`;
+    case 'character':
+      return `MJw${face.value}-.svg`;
+    case 'dot':
+      return `MJt${face.value}-.svg`;
+    case 'wind':
+      return `MJf${WIND_NUM[face.value]}-.svg`;
+    case 'dragon':
+      return `MJd${DRAGON_NUM[face.value]}-.svg`;
+    case 'flower':
+      return `MJh${face.value}j-.svg`;
+    case 'season':
+      return `MJh${face.value + 4}j-.svg`;
+  }
+}
+
+export function tileImageUrl(face: TileFace): string {
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${tileFileName(face)}`;
+}
+
 export function tileChinese(face: TileFace): string {
   switch (face.suit) {
     case 'dot':

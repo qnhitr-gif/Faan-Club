@@ -1,73 +1,166 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { WindValue } from '@/lib/tiles';
-import { TableView } from './TableView';
+import { WallsBuiltView } from './DealHands';
+import { PickSeats } from './PickSeats';
+import { PrimaryButton } from './PrimaryButton';
 
-const WALL_LEN = 18;
-const TILE = 14;    // px — square tiles, all walls same visual length
-const GAP  = 1;
-const WALL_PX = WALL_LEN * TILE + (WALL_LEN - 1) * GAP; // 269
+// Sunflower spiral filling the diamond (|x|+|y| ≤ 170px)
+const PHI = (1 + Math.sqrt(5)) / 2;
+const TILE_COUNT = 144;
+const BASE_TILES = Array.from({ length: TILE_COUNT }, (_, i) => {
+  const angle = i * 2 * Math.PI / PHI;
+  const maxR = 180 / (Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle)));
+  const r = Math.sqrt(i / TILE_COUNT) * maxR;
+  return {
+    x: Math.cos(angle) * r,
+    y: Math.sin(angle) * r,
+    r: 0,
+  };
+});
 
-function MiniTile() {
-  return (
-    <svg width={TILE} height={TILE} viewBox="0 0 14 14" aria-hidden>
-      <rect width={14} height={14} rx={2} fill="#3D6E2F" />
-      <rect x={1.5} y={1.5} width={11} height={11} rx={1.5} fill="none"
-        stroke="#244416" strokeOpacity={0.45} strokeWidth={0.5} />
-      {/* mid-line hinting at 2-tile height */}
-      <line x1={1.5} y1={7} x2={12.5} y2={7}
-        stroke="#244416" strokeOpacity={0.3} strokeWidth={0.5} />
-    </svg>
-  );
+export interface BuildWallsStateType {
+  shuffleCount: number;
+  wallsBuilt: boolean;
+  animKey: number;
+  canBuild: boolean;
+  shuffle: () => void;
+  buildWalls: () => void;
+  reset: () => void;
 }
 
-function HWall({ built }: { built: boolean }) {
+export function useBuildWalls(): BuildWallsStateType {
+  const [shuffleCount, setShuffleCount] = useState(0);
+  const [wallsBuilt, setWallsBuilt] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
+
+  function shuffle() {
+    if (wallsBuilt || shuffleCount >= 3) return;
+    setShuffleCount(c => c + 1);
+    setAnimKey(k => k + 1);
+  }
+
+  function buildWalls() { setWallsBuilt(true); }
+
+  function reset() {
+    setShuffleCount(0);
+    setWallsBuilt(false);
+    setAnimKey(0);
+  }
+
+  return { shuffleCount, wallsBuilt, animKey, canBuild: shuffleCount >= 3, shuffle, buildWalls, reset };
+}
+
+function rand(seed: number): number {
+  return Math.abs((Math.sin(seed * 127.1 + 311.7) * 43758.5453) % 1);
+}
+
+function TilePile({ animKey, onClick, done }: { animKey: number; onClick: () => void; done: boolean }) {
+  const tiles = useMemo(() => {
+    if (animKey === 0) return BASE_TILES.map(t => ({ x: t.x, y: t.y, r: t.r }));
+    return BASE_TILES.map((_, i) => {
+      const seed = animKey * 7919 + i * 137;
+      const angle = rand(seed) * Math.PI * 2;
+      const maxR = 180 / (Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle)));
+      const r = Math.sqrt(rand(seed + 1)) * maxR;
+      return {
+        x: Math.cos(angle) * r,
+        y: Math.sin(angle) * r,
+        r: 0,
+      };
+    });
+  }, [animKey]);
+
   return (
-    <div className={`flex transition-opacity duration-500 ${built ? 'opacity-100' : 'opacity-0'}`} style={{ gap: GAP }}>
-      {Array.from({ length: WALL_LEN }).map((_, i) => <MiniTile key={i} />)}
+    <div
+      className={`absolute inset-0 select-none ${done ? '' : 'cursor-pointer'}`}
+      onClick={done ? undefined : onClick}
+      role={done ? undefined : 'button'}
+      aria-label={done ? undefined : 'Click to shuffle tiles'}
+      tabIndex={done ? undefined : 0}
+      onKeyDown={done ? undefined : (e) => { if (e.key === 'Enter') onClick(); }}
+    >
+      {tiles.map((t, i) => (
+        <div
+          key={i}
+          className="absolute rounded-[2px] transition-all duration-300"
+          style={{
+            width: 22,
+            height: 30,
+            background: '#235836',
+            boxShadow: 'inset 0 0 0 1px rgba(36,68,22,0.5)',
+            left: '50%',
+            top: '50%',
+            transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) rotate(${t.r}deg)`,
+          }}
+        />
+      ))}
     </div>
   );
 }
 
-function VWall({ built }: { built: boolean }) {
+export function BuildWallsDisplay({ yourSeat, state }: { yourSeat: WindValue; state: BuildWallsStateType }) {
+  const { wallsBuilt, animKey, shuffle, canBuild } = state;
+
+  if (wallsBuilt) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <WallsBuiltView yourSeat={yourSeat} />
+      </div>
+    );
+  }
+
   return (
-    <div className={`flex flex-col transition-opacity duration-500 ${built ? 'opacity-100' : 'opacity-0'}`} style={{ gap: GAP }}>
-      {Array.from({ length: WALL_LEN }).map((_, i) => <MiniTile key={i} />)}
+    <div className="relative">
+      <PickSeats yourSeat={yourSeat} />
+      <TilePile animKey={animKey} onClick={shuffle} done={canBuild} />
     </div>
   );
 }
 
-export function BuildWalls({ yourSeat }: { yourSeat: WindValue }) {
-  const [built, setBuilt] = useState(false);
+export function BuildWallsAction({
+  state,
+  onContinue,
+  back,
+}: {
+  state: BuildWallsStateType;
+  onContinue: () => void;
+  back: () => void;
+}) {
+  const { wallsBuilt, canBuild, buildWalls } = state;
 
   return (
-    <TableView
-      yourSeat={yourSeat}
-      center={
-        <div className="flex flex-col items-center gap-4">
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: `${TILE}px ${WALL_PX}px ${TILE}px`,
-            gridTemplateRows: `${TILE}px ${WALL_PX}px ${TILE}px`,
-            gap: 2,
-          }}>
-            <span /><HWall built={built} /><span />
-            <VWall built={built} />
-            <div className="flex items-center justify-center text-ui text-tertiary text-center"
-              style={{ width: WALL_PX, height: WALL_PX }}>
-              {built ? `4 walls · ${WALL_LEN * 4 * 2} tiles` : 'Click Build'}
-            </div>
-            <VWall built={built} />
-            <span /><HWall built={built} /><span />
-          </div>
-
-          <button type="button" onClick={() => setBuilt(b => !b)}
-            className="px-4 py-2 rounded-md bg-brand-green text-brand-cream text-ui font-medium hover:bg-brand-greenDeep transition-colors">
-            {built ? 'Replay' : 'Build'}
-          </button>
+    <div className="flex-1 flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <div className="text-ui font-medium text-primary text-[13px]">
+          {wallsBuilt ? '4 walls · 18 × 2' : 'Click tiles to shuffle'}
         </div>
-      }
-    />
+        <button type="button" onClick={back} className="text-ui text-[11px] text-tertiary hover:text-primary">←</button>
+      </div>
+
+      {wallsBuilt && (
+        <div className="bg-elev border border-brand-green/20 rounded-lg px-2.5 py-1.5">
+          <div className="text-ui font-medium text-primary text-[12px]">Walls are set.</div>
+        </div>
+      )}
+
+      <div className="border-t border-brand-green/20 pt-1">
+        <p className="text-[11px] text-secondary leading-relaxed">
+          {wallsBuilt
+            ? 'Each player built a wall 18 tiles wide and 2 tiles high. Together they form a closed square.'
+            : 'Shuffle all tiles face-down so no one knows what’s where. Click the pile 3 times to mix them up.'}
+        </p>
+      </div>
+
+      <div className="flex-1 min-h-0" />
+
+      <div className="border-t border-brand-green/20 pt-2">
+        {wallsBuilt
+          ? <PrimaryButton onClick={onContinue}>Continue</PrimaryButton>
+          : <PrimaryButton onClick={buildWalls} disabled={!canBuild}>Build walls</PrimaryButton>
+        }
+      </div>
+    </div>
   );
 }

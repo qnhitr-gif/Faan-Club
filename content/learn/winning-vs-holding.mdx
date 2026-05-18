@@ -1,0 +1,77 @@
+---
+number: 13
+slug: winning-vs-holding
+title: Winning vs. holding
+description: You're one tile from a small win. Do you take it or hold for a bigger hand? A framework for the most common high-stakes decision in mahjong.
+readingTime: 5 min
+hideHeader: true
+---
+
+<ChapterHeader n={13} plain="Take it or" italic="hold." />
+
+You're at tenpai. Someone discards your winning tile. The hand is worth 3 faan — enough to win. But one more tile could take you to 5 faan. Do you take the win or let it go?
+
+This is the most common high-leverage decision in mahjong. Most players default to one answer. The right answer depends on five specific factors.
+
+<Section n={1} title="The decision framework">
+
+<Compare>
+  <CompareSide title="Take the win — if any of these is true" tone="positive">
+    - Wall has **≤ 20 tiles** remaining.
+    - The upgrade tile is dead — 3 or 4 copies already visible.
+    - An opponent has 2 or more exposures.
+    - The upgrade needs **2 or more specific tiles** in sequence.
+    - Anyone at the table shows a third exposure.
+    - You're behind and need the guaranteed points now.
+  </CompareSide>
+  <CompareSide title="Hold for bigger — only when all of these are true" tone="cautious">
+    - Wall has **> 20 tiles** remaining.
+    - Upgrade needs only **1 specific tile**.
+    - That tile has **2 or more live copies** in the wall.
+    - No opponent has more than 1 exposure.
+    - Holding doesn't force you to discard a dangerous tile.
+  </CompareSide>
+</Compare>
+
+The conditions for holding require every factor to align. In practice, by tenpai, at least one condition has usually failed — wall is short, or the upgrade tile has been seen, or another player is advanced.
+
+</Section>
+
+<Section n={2} title="The upgrade tile problem">
+
+When calculating whether to hold, be precise about what you're waiting for.
+
+<Pillars>
+  <Pillar n={1} title="One tile needed">
+    How many copies are live? Subtract visible tiles. If 5-Bamboo is your upgrade and you've seen two discarded, only 2 remain among ~20 wall tiles — roughly 10% per draw. Is that worth passing a guaranteed win?
+  </Pillar>
+  <Pillar n={2} title="Two tiles needed">
+    You need a sequence — draw A, then B. The probability compounds. Almost never worth holding past the midgame.
+  </Pillar>
+  <Pillar n={3} title="The forced discard">
+    Holding for an upgrade means drawing a tile and discarding one. If that forced discard is dangerous to an opponent, you're now risking a loss — not just a missed upgrade. Only hold if you can identify a safe discard for whatever you'd draw next.
+  </Pillar>
+</Pillars>
+
+</Section>
+
+<Section n={3} title="Worked example">
+
+Wall: 28 tiles. Tenpai waiting on 6-Dot, common hand + self-draw = 3 faan. Drawing 8-Dot instead would complete pure one-suit = 7 faan.
+
+Check the framework:
+- Wall > 20 ✓
+- Upgrade needs 1 tile ✓ (8-Dot)
+- 8-Dot: one copy visible in discards, three remain ✓
+- No opponent has more than 1 exposure ✓
+- You hold characters as safe discards for the next draw ✓
+
+All five conditions pass. Hold for the upgrade.
+
+Same situation but wall = 15 tiles. Condition 1 fails. **Take the win.**
+
+<Callout title="Don't romanticize the big hand">
+Limit hands and 13-faan wins make great stories. They also require passing on many smaller wins, creating opportunities to deal into opponents. Players with the best long-term results play consistently, not heroically.
+</Callout>
+
+</Section>

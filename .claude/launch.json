@@ -2,11 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "mahjong-school",
+      "name": "Next.js Dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3000,
-      "cwd": "/Users/louietran/mahjong-school"
+      "port": 3001,
+      "autoPort": true
     }
   ]
 }

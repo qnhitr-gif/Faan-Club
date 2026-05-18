@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 
 export interface ChapterMeta {
@@ -8,13 +9,15 @@ export interface ChapterMeta {
   title: string;
   description: string;
   readingTime: string;
+  hideHeader?: boolean;
+  hideFooter?: boolean;
 }
 
 export interface Chapter extends ChapterMeta {
   source: string;
 }
 
-const CONTENT_DIR = path.join(process.cwd(), 'content/learn');
+const CONTENT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../content/learn');
 
 export function listChapters(): ChapterMeta[] {
   const files = fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith('.mdx'));
@@ -27,6 +30,8 @@ export function listChapters(): ChapterMeta[] {
       title: data.title as string,
       description: data.description as string,
       readingTime: data.readingTime as string,
+      hideHeader: data.hideHeader as boolean | undefined,
+      hideFooter: data.hideFooter as boolean | undefined,
     };
   });
   return chapters.sort((a, b) => a.number - b.number);
@@ -44,6 +49,8 @@ export function getChapter(slug: string): Chapter | null {
         title: data.title,
         description: data.description,
         readingTime: data.readingTime,
+        hideHeader: data.hideHeader,
+        hideFooter: data.hideFooter,
         source: content,
       };
     }

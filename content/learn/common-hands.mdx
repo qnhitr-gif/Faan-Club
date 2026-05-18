@@ -1,0 +1,523 @@
+---
+number: 5
+slug: common-hands
+title: Hands, bonuses, and the 3-faan floor
+description: Every scoreable hand in HK mahjong, how bonuses stack, and what it takes to clear the 3-faan minimum.
+readingTime: 10 min
+hideHeader: true
+---
+
+<ChapterHeader n={5} plain="What wins," italic="and why." />
+
+HK mahjong scores on *faan* (番) — pattern points. Your hand is worth whatever patterns it contains, stacked together. Most tables set a **3-faan minimum**: any hand below the floor cannot win.
+
+<ScoringSection n={1} title="Common hands" tag="Learn these by shape">
+
+The hands you'll build and encounter most sessions. Learn these by shape first.
+
+<PatternGrid>
+  <PatternCard
+    name="Common hand"
+    chinese="平糊"
+    faan={1}
+    description="All chows with a non-honor pair. The baseline shape. Stacks with self-draw, concealed bonus, or a seat wind pair to clear the 3-faan floor."
+    tiles={[
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 2 },
+      { suit: 'dot', value: 3 },
+      { suit: 'bamboo', value: 4 },
+      { suit: 'bamboo', value: 5 },
+      { suit: 'bamboo', value: 6 },
+      { suit: 'character', value: 7 },
+      { suit: 'character', value: 8 },
+      { suit: 'character', value: 9 },
+      { suit: 'dot', value: 5 },
+      { suit: 'dot', value: 6 },
+      { suit: 'dot', value: 7 },
+      { suit: 'bamboo', value: 2 },
+      { suit: 'bamboo', value: 2 },
+    ]}
+  />
+  <PatternCard
+    name="All pungs"
+    chinese="對對糊"
+    faan={3}
+    description="Four pungs (or kongs) and a pair — no chows. Already at the minimum. Every honor pung stacks on top."
+    tiles={[
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'character', value: 5 },
+      { suit: 'character', value: 5 },
+      { suit: 'character', value: 5 },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+    ]}
+  />
+  <PatternCard
+    name="Mixed one-suit"
+    chinese="混一色"
+    faan={3}
+    description="One numbered suit plus winds or dragons. Clears the floor on its own — the first hand worth deliberately building toward."
+    tiles={[
+      { suit: 'bamboo', value: 2 },
+      { suit: 'bamboo', value: 3 },
+      { suit: 'bamboo', value: 4 },
+      { suit: 'bamboo', value: 6 },
+      { suit: 'bamboo', value: 7 },
+      { suit: 'bamboo', value: 8 },
+      { suit: 'bamboo', value: 1 },
+      { suit: 'bamboo', value: 1 },
+      { suit: 'bamboo', value: 1 },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'south' },
+    ]}
+  />
+  <PatternCard
+    name="Seven pairs"
+    chinese="七對子"
+    faan={4}
+    description="Seven distinct pairs. No calls allowed — every tile must come from the wall. Fully concealed by definition."
+    tiles={[
+      { suit: 'dot', value: 2 },
+      { suit: 'dot', value: 2 },
+      { suit: 'bamboo', value: 5 },
+      { suit: 'bamboo', value: 5 },
+      { suit: 'character', value: 1 },
+      { suit: 'character', value: 1 },
+      { suit: 'dot', value: 7 },
+      { suit: 'dot', value: 7 },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 9 },
+    ]}
+  />
+  <PatternCard
+    name="Pure one-suit"
+    chinese="清一色"
+    faan={7}
+    description="Every tile from a single suit — no winds, no dragons. Difficult to build but starts at 7 faan. A realistic stretch goal once your suit discipline improves."
+    tiles={[
+      { suit: 'bamboo', value: 1 },
+      { suit: 'bamboo', value: 2 },
+      { suit: 'bamboo', value: 3 },
+      { suit: 'bamboo', value: 5 },
+      { suit: 'bamboo', value: 5 },
+      { suit: 'bamboo', value: 5 },
+      { suit: 'bamboo', value: 7 },
+      { suit: 'bamboo', value: 8 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 2 },
+      { suit: 'bamboo', value: 3 },
+      { suit: 'bamboo', value: 4 },
+      { suit: 'bamboo', value: 6 },
+      { suit: 'bamboo', value: 6 },
+    ]}
+  />
+</PatternGrid>
+
+</ScoringSection>
+
+<ScoringSection n={2} title="Rare hands" tag="Limit hands pay 13 faan">
+
+Hands you won't see often — but worth knowing by shape. A **limit hand** pays the maximum (13 faan) regardless of anything else.
+
+<PatternGrid>
+  <PatternCard
+    name="Mixed orphans"
+    chinese="花幺九"
+    faan={4}
+    description="Pungs and kongs of terminal tiles (1s and 9s) and honor tiles only — no 2–8 tiles at all. All-pung structure means honor bonuses stack freely on top."
+    tiles={[
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'character', value: 9 },
+      { suit: 'character', value: 9 },
+    ]}
+  />
+  <PatternCard
+    name="Small dragons"
+    chinese="小三元"
+    faan={5}
+    description="Pungs of any two dragons plus a pair of the third. The two dragon pungs add +2 faan on top of the base — total is usually 7+ faan with wind bonuses."
+    tiles={[
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'white' },
+      { suit: 'dragon', value: 'white' },
+      { suit: 'dot', value: 3 },
+      { suit: 'dot', value: 4 },
+      { suit: 'dot', value: 5 },
+      { suit: 'bamboo', value: 7 },
+      { suit: 'bamboo', value: 8 },
+      { suit: 'bamboo', value: 9 },
+    ]}
+  />
+  <PatternCard
+    name="Small winds"
+    chinese="小四喜"
+    faan={6}
+    description="Pungs of any three winds plus a pair of the fourth. Wind bonuses stack on top — a strong hand that can clear 10+ faan when seat and round winds align."
+    tiles={[
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'dot', value: 4 },
+      { suit: 'dot', value: 5 },
+      { suit: 'dot', value: 6 },
+    ]}
+  />
+  <PatternCard
+    name="Great dragons"
+    chinese="大三元"
+    faan={8}
+    description="Pungs of all three dragons. Base 8 faan plus three dragon pung bonuses (+3) pushes this to 11+ before wind bonuses — near the cap without trying."
+    tiles={[
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'white' },
+      { suit: 'dragon', value: 'white' },
+      { suit: 'dragon', value: 'white' },
+      { suit: 'dot', value: 2 },
+      { suit: 'dot', value: 3 },
+      { suit: 'dot', value: 4 },
+      { suit: 'bamboo', value: 8 },
+      { suit: 'bamboo', value: 8 },
+    ]}
+  />
+</PatternGrid>
+
+<RareHandGrid>
+  <RareHandCard
+    name="Self triplets"
+    chinese="四暗刻"
+    faan={10}
+    faanMax={13}
+    description="Four concealed pungs and a pair — never calling a single discard. All pungs drawn from the wall or won by self-draw. Stacks with win method and seat wind bonuses."
+    tiles={[
+      { suit: 'dot', value: 3 },
+      { suit: 'dot', value: 3 },
+      { suit: 'dot', value: 3 },
+      { suit: 'bamboo', value: 7 },
+      { suit: 'bamboo', value: 7 },
+      { suit: 'bamboo', value: 7 },
+      { suit: 'character', value: 2 },
+      { suit: 'character', value: 2 },
+      { suit: 'character', value: 2 },
+      { suit: 'dot', value: 9 },
+      { suit: 'dot', value: 9 },
+      { suit: 'dot', value: 9 },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+    ]}
+  />
+  <RareHandCard
+    name="Orphans"
+    chinese="么九"
+    faan={10}
+    faanMax={13}
+    description="Pungs and kongs of terminal tiles only — 1s and 9s from any suit. No honors, no 2–8 tiles. Only 6 different terminals exist (1 and 9 in each of three suits), so every copy matters."
+    tiles={[
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 9 },
+      { suit: 'dot', value: 9 },
+      { suit: 'dot', value: 9 },
+      { suit: 'bamboo', value: 1 },
+      { suit: 'bamboo', value: 1 },
+      { suit: 'bamboo', value: 1 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'character', value: 9 },
+      { suit: 'character', value: 9 },
+    ]}
+  />
+  <RareHandCard
+    name="All honors"
+    chinese="字一色"
+    faan={10}
+    faanMax={13}
+    description="Only winds and dragons — no suited tiles at all. Every meld must be a pung (no chows for honors). Dragon and wind bonuses stack on top of the base 10."
+    tiles={[
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'south' },
+    ]}
+  />
+  <RareHandCard
+    name="Nine gates"
+    chinese="九蓮寶燈"
+    faan={10}
+    faanMax={13}
+    description="1-1-1-2-3-4-5-6-7-8-9-9-9 all in one suit, plus any one tile of that same suit. Fully concealed and pure one-suit. One of the hardest and most beautiful hands in the game."
+    tiles={[
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 2 },
+      { suit: 'dot', value: 3 },
+      { suit: 'dot', value: 4 },
+      { suit: 'dot', value: 5 },
+      { suit: 'dot', value: 6 },
+      { suit: 'dot', value: 7 },
+      { suit: 'dot', value: 8 },
+      { suit: 'dot', value: 9 },
+      { suit: 'dot', value: 9 },
+      { suit: 'dot', value: 9 },
+      { suit: 'dot', value: 5 },
+    ]}
+  />
+  <RareHandCard
+    name="Great winds"
+    chinese="大四喜"
+    faan={13}
+    faanMax={13}
+    description="Pungs of all four winds — East, South, West, North — plus any pair. A limit hand. Wind bonuses no longer count separately; the hand itself already pays the cap."
+    tiles={[
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+    ]}
+  />
+  <RareHandCard
+    name="All kongs"
+    chinese="四槓子"
+    faan={13}
+    faanMax={13}
+    description="Four kongs and a pair. Each kong exposes your hand completely — opponents see every tile you hold except the pair. Exceptionally difficult to conceal and survive to win."
+    tiles={[
+      { suit: 'dot', value: 5 },
+      { suit: 'dot', value: 5 },
+      { suit: 'dot', value: 5 },
+      { suit: 'dot', value: 5 },
+      { suit: 'bamboo', value: 3 },
+      { suit: 'bamboo', value: 3 },
+      { suit: 'bamboo', value: 3 },
+      { suit: 'bamboo', value: 3 },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'east' },
+    ]}
+  />
+  <RareHandCard
+    name="Thirteen orphans"
+    chinese="十三么"
+    faan={13}
+    faanMax={13}
+    description="One each of every terminal and honor tile (1, 9 in all three suits + all four winds + all three dragons) plus any duplicate of one of those tiles. Fully concealed — cannot be built through calls."
+    tiles={[
+      { suit: 'dot', value: 1 },
+      { suit: 'dot', value: 9 },
+      { suit: 'bamboo', value: 1 },
+      { suit: 'bamboo', value: 9 },
+      { suit: 'character', value: 1 },
+      { suit: 'character', value: 9 },
+      { suit: 'wind', value: 'east' },
+      { suit: 'wind', value: 'south' },
+      { suit: 'wind', value: 'west' },
+      { suit: 'wind', value: 'north' },
+      { suit: 'dragon', value: 'red' },
+      { suit: 'dragon', value: 'green' },
+      { suit: 'dragon', value: 'white' },
+      { suit: 'dot', value: 1 },
+    ]}
+  />
+</RareHandGrid>
+
+</ScoringSection>
+
+<ScoringSection n={3} title="Stacking bonuses" tag="All stack, none replace">
+
+These add faan on top of any hand pattern above. None replace a pattern — they all stack.
+
+<HonorGrid>
+  <HonorCard
+    label="Seat wind pung"
+    faan={1}
+    tiles={[]}
+    note="A pung of whichever wind matches your current seat — East, South, West, or North. Your seat rotates each round, so the qualifying wind changes. Not one specific tile."
+  />
+  <HonorCard
+    label="Round wind pung"
+    faan={1}
+    tiles={[]}
+    note="A pung of the current round wind. If your seat wind and the round wind are the same, both bonuses apply: +2 faan total from a single pung."
+  />
+  <HonorCard
+    label="Dragon pung"
+    faan={1}
+    tiles={[]}
+    tileGroups={[
+      [{ suit: 'dragon', value: 'red' }, { suit: 'dragon', value: 'red' }, { suit: 'dragon', value: 'red' }],
+      [{ suit: 'dragon', value: 'green' }, { suit: 'dragon', value: 'green' }, { suit: 'dragon', value: 'green' }],
+      [{ suit: 'dragon', value: 'white' }, { suit: 'dragon', value: 'white' }, { suit: 'dragon', value: 'white' }],
+    ]}
+    note="+1 faan per dragon pung, regardless of which dragon. Three dragon pungs = +3 faan. Each is scored independently."
+  />
+  <HonorCard
+    label="Flower tiles"
+    faan={1}
+    tiles={[
+      { suit: 'flower', value: 1 },
+      { suit: 'flower', value: 2 },
+      { suit: 'flower', value: 3 },
+      { suit: 'flower', value: 4 },
+    ]}
+    note="Four flower tiles (梅蘭菊竹), numbered 1–4. Each scores +1 faan and triggers a free replacement draw from the back of the wall. You can't build toward them — they arrive randomly."
+  />
+  <HonorCard
+    label="Season tiles"
+    faan={1}
+    tiles={[
+      { suit: 'season', value: 1 },
+      { suit: 'season', value: 2 },
+      { suit: 'season', value: 3 },
+      { suit: 'season', value: 4 },
+    ]}
+    note="Four season tiles (春夏秋冬), numbered 1–4. Same rule as flowers: +1 faan each, replacement draw from the back wall. Drawing your own seat's number (e.g. East draws flower or season 1) is sometimes called a 'correct flower' — some house rules award an extra +1 for it."
+  />
+</HonorGrid>
+
+</ScoringSection>
+
+<ScoringSection n={4} title="Win method bonuses" tag="How you win matters">
+
+How you win adds faan on top of what your hand is worth. These stack with each other and with all pattern bonuses above.
+
+<WinMethods>
+  <WinMethod
+    label="Self-draw"
+    chinese="自摸"
+    faan={1}
+    description="You draw the winning tile yourself. All three opponents each pay you the full amount. The most important method bonus — it changes who pays, not just how much."
+  />
+  <WinMethod
+    label="Concealed hand"
+    chinese="門前清"
+    faan={1}
+    description="You win without having claimed any discard for a meld. No exposed sets. Stacks with self-draw: a concealed self-draw common hand is already 3 faan."
+  />
+  <WinMethod
+    label="Last tile from wall"
+    chinese="海底撈月"
+    faan={1}
+    description="The very last playable tile drawn from the wall completes your hand. One of the most dramatic moments in the game."
+  />
+  <WinMethod
+    label="Last discard"
+    chinese="河底撈魚"
+    faan={1}
+    description="The final discard of the round completes your hand. If no one has drawn the last tile and the final discard is your winning tile, you can still claim it."
+  />
+  <WinMethod
+    label="Win on replacement"
+    chinese="槓上開花"
+    faan={1}
+    description="You declare a kong, draw the replacement tile from the back of the wall, and that replacement completes your hand."
+  />
+  <WinMethod
+    label="Robbing a kong"
+    chinese="搶槓"
+    faan={1}
+    description="An opponent upgrades a pung to a kong — and that tile completes your hand. You can claim it before it becomes their kong."
+  />
+  <WinMethod
+    label="Heavenly hand"
+    chinese="天糊"
+    faan={13}
+    limit
+    description="East wins with their starting 14-tile hand without discarding. Dealt in, already complete. A limit hand — the rarest win in mahjong."
+  />
+  <WinMethod
+    label="Earthly hand"
+    chinese="地糊"
+    faan={13}
+    limit
+    description="A non-East player wins on East's very first discard, before taking their own turn. Also a limit hand."
+  />
+</WinMethods>
+
+</ScoringSection>
+
+<ScoringSection n={5} title="Who pays what" tag="Discard vs. self-draw">
+
+<PayoutRules />
+
+The dealer (East) pays and receives double. Winning as East is the biggest single payout at the table — but staying East requires winning the hand.
+
+</ScoringSection>
+
+<ScoringSection n={6} title="The faan scale" tag="3 faan = 1 unit">
+
+Faan totals convert to *units* on an exponential curve. Below 3 faan, you can't win. Above 11, all hands pay the same cap.
+
+<FaanScale />
+
+House rules vary. Some tables double at every step; others use a fixed schedule. The key number to internalize: **3 faan = 1 unit** — that's the baseline everything else is measured against.
+
+</ScoringSection>

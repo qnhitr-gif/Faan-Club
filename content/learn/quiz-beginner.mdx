@@ -1,0 +1,116 @@
+---
+number: 4.5
+slug: quiz-beginner
+title: Checkpoint — Beginner
+description: Five questions covering the 0-point game basics. Check your understanding before moving to scoring.
+readingTime: 5 min
+hideHeader: true
+---
+
+# Beginner *checkpoint.*
+
+Five questions covering chapters 1–5. No time limit. Try to answer each one before you reveal it.
+
+---
+
+<Section n={1} title="Is this a complete hand?">
+
+<TileRow tiles={[
+  { suit: 'dot', value: 2 },
+  { suit: 'dot', value: 3 },
+  { suit: 'dot', value: 4 },
+  { suit: 'bamboo', value: 7 },
+  { suit: 'bamboo', value: 7 },
+  { suit: 'bamboo', value: 7 },
+  { suit: 'character', value: 1 },
+  { suit: 'character', value: 2 },
+  { suit: 'character', value: 3 },
+  { suit: 'wind', value: 'east' },
+  { suit: 'wind', value: 'east' },
+  { suit: 'wind', value: 'east' },
+  { suit: 'dragon', value: 'green' },
+  { suit: 'dragon', value: 'green' },
+]} gap="tight" />
+
+<Callout title="Answer — Yes, complete">
+Four melds and one pair: chow (2–3–4 Dots), pung (7 Bamboo × 3), chow (1–2–3 Characters), pung (East Wind × 3), pair (Green Dragon × 2). Every tile belongs to a group — nothing left over.
+</Callout>
+
+</Section>
+
+---
+
+<Section n={2} title="Name this meld">
+
+<TileRow tiles={[
+  { suit: 'character', value: 5 },
+  { suit: 'character', value: 6 },
+  { suit: 'character', value: 7 },
+]} gap="tight" />
+
+Chow, pung, or kong?
+
+<Callout title="Answer — Chow">
+Three consecutive tiles in the same suit. Chows only work within a single suit — never across suits, and never with winds or dragons.
+</Callout>
+
+</Section>
+
+---
+
+<Section n={3} title="Call priority">
+
+Two players want the same discard simultaneously. Player A wants it to complete a pung. Player B wants it to win. Who gets the tile?
+
+<Callout title="Answer — Player B">
+Priority order: **winning hand beats everything** → kong or pung → chow. A win claim always outranks a pung, which always outranks a chow.
+</Callout>
+
+</Section>
+
+---
+
+<Section n={4} title="What is self-draw?">
+
+A player draws the winning tile themselves from the wall instead of claiming someone's discard. What does this change about payment?
+
+<Callout title="Answer — All three opponents pay">
+Normally only the discarder pays the winner. Self-draw (自摸) means all three opponents each pay the full amount. It also adds +1 faan to the hand's score.
+</Callout>
+
+</Section>
+
+---
+
+<Section n={5} title="Is this hand enough to win?">
+
+Standard 3-faan minimum table. The player won by claiming a discard (not self-draw).
+
+<TileRow tiles={[
+  { suit: 'dot', value: 1 },
+  { suit: 'dot', value: 2 },
+  { suit: 'dot', value: 3 },
+  { suit: 'bamboo', value: 4 },
+  { suit: 'bamboo', value: 5 },
+  { suit: 'bamboo', value: 6 },
+  { suit: 'character', value: 7 },
+  { suit: 'character', value: 8 },
+  { suit: 'character', value: 9 },
+  { suit: 'dot', value: 5 },
+  { suit: 'dot', value: 6 },
+  { suit: 'dot', value: 7 },
+  { suit: 'bamboo', value: 3 },
+  { suit: 'bamboo', value: 3 },
+]} gap="tight" />
+
+<Callout title="Answer — No, only 1 faan">
+This is a common hand (平糊): all chows, non-honor pair = 1 faan. No self-draw bonus (they claimed a discard). 1 faan does not clear the 3-faan floor. The player cannot declare a win.
+</Callout>
+
+</Section>
+
+---
+
+<Callout title="Ready for intermediate?">
+If questions 1–4 felt solid and question 5 made you think, move on. The intermediate section starts with **Tenpai and Outs** — the language of being one tile away.
+</Callout>

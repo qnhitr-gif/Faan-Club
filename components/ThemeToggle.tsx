@@ -22,7 +22,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="ml-2 px-2.5 py-1.5 rounded-md text-secondary hover:text-primary hairline-strong border"
+      className="ml-2 px-2.5 py-1.5 rounded-md text-brand-cream/70 hover:text-brand-cream border border-white/20 hover:bg-white/10 transition-colors"
       aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       <span className="text-ui">{dark ? '☾' : '☀'}</span>

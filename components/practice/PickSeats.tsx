@@ -2,6 +2,7 @@
 
 import type { TileFace, WindValue } from '@/lib/tiles';
 import { SuitFace } from '@/components/tile/TileFaces';
+import { MahjongMat } from './MahjongMat';
 import type { DiceValues } from './Dice';
 
 interface PickSeatsProps {
@@ -13,6 +14,7 @@ interface PickSeatsProps {
 const WIND_LABELS: Record<WindValue, string> = { east: 'East', south: 'South', west: 'West', north: 'North' };
 const PLAYER_NUMS: Record<WindValue, number> = { east: 1, south: 2, west: 3, north: 4 };
 const CCW_ORDER: WindValue[] = ['east', 'south', 'west', 'north'];
+const BADGE_CLS = 'text-[10px] font-semibold uppercase tracking-wider text-brand-green bg-brand-green/15 px-1.5 rounded whitespace-nowrap';
 
 function rotateSeat(seat: WindValue, n: number): WindValue {
   const i = CCW_ORDER.indexOf(seat);
@@ -24,26 +26,42 @@ export function WindTile({ wind, size = 26 }: { wind: WindValue; size?: number }
   const h = Math.round(size * 84 / 60);
   return (
     <svg width={size} height={h} viewBox="0 0 60 84" aria-hidden style={{ flexShrink: 0 }}>
-      <path d="M 0,6 H 60 V 79 Q 60,84 55,84 H 5 Q 0,84 0,79 Z" fill="#D4C5A2" />
-      <path d="M 5,0 H 55 Q 60,0 60,5 V 78 H 0 V 5 Q 0,0 5,0 Z" fill="#F5F0E1" />
       <SuitFace face={face} />
     </svg>
   );
 }
 
-function SeatLabel({ wind, you }: { wind: WindValue; you?: boolean }) {
+function SeatLabel({ wind, you, reverse }: { wind: WindValue; you?: boolean; reverse?: boolean }) {
+  const pill = (
+    <span
+      style={reverse ? { display: 'inline-block', minWidth: '115px' } : undefined}
+      className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
+        you ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
+      }`}
+    >
+      <span className="font-medium">Player {PLAYER_NUMS[wind]}</span>
+      {' · '}{WIND_LABELS[wind]}
+      {you && ' · you'}
+    </span>
+  );
+
+  if (reverse) {
+    return (
+      <div className="relative w-fit">
+        {wind === 'east' && (
+          <div className="absolute left-full inset-y-0 flex items-center gap-1 pl-1.5">
+            <span className={BADGE_CLS}>dealer</span>
+          </div>
+        )}
+        {pill}
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-1 justify-center">
-      <span className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-        you ? 'bg-brand-green text-brand-cream' : 'text-secondary hairline border'
-      }`}>
-        <span className="font-medium">Player {PLAYER_NUMS[wind]}</span>
-        {' · '}{WIND_LABELS[wind]}
-        {you && ' · you'}
-      </span>
-      {wind === 'east' && (
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-green bg-brand-green/15 px-1.5 rounded whitespace-nowrap">dealer</span>
-      )}
+      {pill}
+      {wind === 'east' && <span className={BADGE_CLS}>dealer</span>}
     </div>
   );
 }
@@ -51,7 +69,7 @@ function SeatLabel({ wind, you }: { wind: WindValue; you?: boolean }) {
 function GenericLabel({ num, you }: { num: number; you?: boolean }) {
   return (
     <span className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-      you ? 'bg-brand-green text-brand-cream' : 'text-secondary hairline border'
+      you ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
     }`}>
       <span className="font-medium">Player {num}</span>
       {you && ' · you'}
@@ -67,28 +85,27 @@ export function PickSeats({ yourSeat }: Pick<PickSeatsProps, 'yourSeat'>) {
   const leftWind   = rotateSeat(perspective, 3);
 
   return (
-    <div className="grid gap-2" style={{
-      gridTemplateAreas: '"top top top" "left center right" "bottom bottom bottom"',
-      gridTemplateColumns: 'minmax(140px, 1fr) auto minmax(140px, 1fr)',
-      gridTemplateRows: '60px auto 60px',
-    }}>
-      <div style={{ gridArea: 'top' }} className="flex flex-col items-center justify-end pb-2">
-        {yourSeat ? <SeatLabel wind={topWind} /> : <GenericLabel num={3} />}
-      </div>
-
-      <div style={{ gridArea: 'left' }} className="flex flex-col items-center justify-center gap-1.5 pr-3">
-        {yourSeat ? <SeatLabel wind={leftWind} /> : <GenericLabel num={4} />}
-      </div>
-
-      <div style={{ gridArea: 'center', width: 325, height: 325 }}
-        className="bg-brand-green/10 border border-brand-green/30 rounded-2xl" />
-
-      <div style={{ gridArea: 'right' }} className="flex flex-col items-center justify-center gap-1.5 pl-3">
-        {yourSeat ? <SeatLabel wind={rightWind} /> : <GenericLabel num={2} />}
-      </div>
-
-      <div style={{ gridArea: 'bottom' }} className="flex flex-col items-center justify-start pt-2">
-        {yourSeat ? <SeatLabel wind={bottomWind} you /> : <GenericLabel num={1} you />}
+    <div className="flex flex-col items-center">
+      <div className="grid gap-2" style={{
+        gridTemplateAreas: '"tl . tr" ". center ." "bl . br"',
+        gridTemplateColumns: '80px max-content 80px',
+        gridTemplateRows: '80px max-content 80px',
+      }}>
+        <div style={{ gridArea: 'tl', marginLeft: '-44px' }} className="flex flex-col items-start justify-end">
+          {yourSeat ? <SeatLabel wind={leftWind} /> : <GenericLabel num={4} />}
+        </div>
+        <div style={{ gridArea: 'tr', marginRight: '-44px' }} className="flex flex-col items-end justify-end">
+          {yourSeat ? <SeatLabel wind={topWind} reverse /> : <GenericLabel num={3} />}
+        </div>
+        <div style={{ gridArea: 'center', width: 367, height: 367 }} className="flex items-center justify-center">
+          <MahjongMat size={367} />
+        </div>
+        <div style={{ gridArea: 'bl', marginLeft: '-44px' }} className="flex flex-col items-start justify-start">
+          {yourSeat ? <SeatLabel wind={bottomWind} you /> : <GenericLabel num={1} you />}
+        </div>
+        <div style={{ gridArea: 'br', marginRight: '-44px' }} className="flex flex-col items-end justify-start">
+          {yourSeat ? <SeatLabel wind={rightWind} reverse /> : <GenericLabel num={2} />}
+        </div>
       </div>
     </div>
   );

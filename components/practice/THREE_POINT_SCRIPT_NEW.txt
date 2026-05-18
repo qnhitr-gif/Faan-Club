@@ -1,0 +1,235 @@
+// ─── Script: Complete 14-step 3-point game (REWRITTEN - VALID HALF FLUSH)
+const THREE_POINT_SCRIPT: ScriptStep[] = [
+  // 0 — Setup
+  {
+    player: 'east', action: 'deal',
+    label: 'Starting position · East round · 3-fan minimum',
+    note: 'East deals. South has an East Wind pair and most Bamboo tiles (missing 3b). West has partial chows. North is scattered. The key: who reaches 3 fan first? South\'s path: build Half Flush (all Bamboo) + EW honor pair.',
+    frontDraws: 0, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','6c','NW','GD','RD'),
+      south: ts('1b','2b','4b','5b','6b','7b','8b','9b','WD','WD','EW','EW','2c'),
+      west:  ts('1b','3b','5b','2d','3d','7d','8d','1c','1c','5c','8c','SW','WW'),
+      north: ts('4b','6b','9b','1d','9d','4c','7c','9c','WD','NW','SW','WW','EW'),
+    },
+    melds: NM(), flowers: NF(), discards: ND(),
+  },
+  // 1 — East discards NW
+  {
+    player: 'east', action: 'discard', tile: t('NW'),
+    label: 'East discards N Wind',
+    note: 'East opens as dealer. NW has no value for East seat — discarded immediately. East has 7-8-9 Bam and 4-5-6 Dot complete but two isolated dragons. Chow-heavy hand will struggle to reach 3 fan.',
+    frontDraws: 0, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','6c','GD','RD'),
+      south: ts('1b','2b','4b','5b','6b','7b','8b','9b','WD','WD','EW','EW','2c'),
+      west:  ts('1b','3b','5b','2d','3d','7d','8d','1c','1c','5c','8c','SW','WW'),
+      north: ts('4b','6b','9b','1d','9d','4c','7c','9c','WD','NW','SW','WW','EW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW'), south: [], west: [], north: [] },
+  },
+  // 2 — South draws 3b, discards 2c
+  {
+    player: 'south', action: 'draw', tile: t('3b'),
+    label: 'South draws 3 Bam · discards 2 Chr',
+    note: 'South drew 3 Bam — 1-2-3 Bam chow complete! Now has three complete Bamboo chows forming. Discards the Character tile (non-Bamboo). Plan: complete chows then get 3rd WD for pung.',
+    frontDraws: 1, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','6c','GD','RD'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','EW','EW'),
+      west:  ts('1b','3b','5b','2d','3d','7d','8d','1c','1c','5c','8c','SW','WW'),
+      north: ts('4b','6b','9b','1d','9d','4c','7c','9c','WD','NW','SW','WW','EW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW'), south: ts('2c'), west: [], north: [] },
+  },
+  // 3 — West draws 4d, discards SW
+  {
+    player: 'west', action: 'draw', tile: t('4d'),
+    label: 'West draws 4 Dot · discards S Wind',
+    note: 'West drew 4 Dot — 2-3-4 Dot chow complete. Has 7-8 Dot partial and 1c pair. Keeps WW (West seat wind = 1 fan). Discards SW (no value for West).',
+    frontDraws: 2, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','6c','GD','RD'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','EW','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','1c','5c','8c','WW'),
+      north: ts('4b','6b','9b','1d','9d','4c','7c','9c','WD','NW','SW','WW','EW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW'), south: ts('2c'), west: ts('SW'), north: [] },
+  },
+  // 4 — North draws 8b, discards WW
+  {
+    player: 'north', action: 'draw', tile: t('8b'),
+    label: 'North draws 8 Bam · discards W Wind',
+    note: 'North draws 8 Bam (8-9 Bam partial forming). Hand scattered. Discards WW (no value for North). Keeps NW (seat wind) and EW (both worth 1 fan each if punged).',
+    frontDraws: 3, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','6c','GD','RD'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','EW','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','1c','5c','8c','WW'),
+      north: ts('4b','6b','8b','9b','1d','9d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW'), south: ts('2c'), west: ts('SW'), north: ts('WW') },
+  },
+  // 5 — East draws 5c, discards GD
+  {
+    player: 'east', action: 'draw', tile: t('5c'),
+    label: 'East draws 5 Chr · discards G Dragon',
+    note: 'East drew 5 Chr — 4-5-6 Chr chow complete. Three complete chows now. Discards GD (isolated). East has four complete chows but zero fan. The 3-point trap is forming.',
+    frontDraws: 3, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','5c','6c','RD'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','EW','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','1c','5c','8c','WW'),
+      north: ts('4b','6b','8b','9b','1d','9d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD'), south: ts('2c'), west: ts('SW'), north: ts('WW') },
+  },
+  // 6 — South draws WD, hand is complete with EW pair! Discards nothing (perfect)
+  {
+    player: 'south', action: 'draw', tile: t('WD'),
+    label: 'South draws W Dragon · Complete hand · all Bamboo + WD pung + EW pair!',
+    note: 'South drew the 3rd White Dragon! Hand is now complete: 1-2-3b, 4-5-6b, 7-8-9b, WD pung, EW pair. This is a valid Half Flush with honors! BUT: WD pung (1) + EW pair (0, not a pung) + self-draw (1) = 2 fan only. Still below 3-fan minimum. Need EW to become a pung, not a pair.',
+    frontDraws: 3, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','5c','6c','RD'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','1c','5c','8c','WW'),
+      north: ts('4b','6b','8b','9b','1d','9d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD'), south: ts('2c'), west: ts('SW'), north: ts('WW') },
+  },
+  // 7 — West claims tile, continues. South discards EW to hunt for another one
+  {
+    player: 'west', action: 'draw', tile: t('9c'),
+    label: 'West draws 9 Chr · South discards EW (waiting for another)',
+    note: 'The play continues. South must discard one EW to draw more tiles and try to get a second EW to complete the honor pung. By hunting the EW discard, South can transform the pair into a pung.',
+    frontDraws: 3, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','5c','6c','RD'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','WW'),
+      north: ts('4b','6b','8b','9b','1d','9d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+  },
+  // 8 — North draws something, South discards more
+  {
+    player: 'north', action: 'draw', tile: t('5b'),
+    label: 'North draws 5 Bam · improves',
+    note: 'North draws 5b — 4-5-6 Bam chow forming. North improving but still far from 3 fan.',
+    frontDraws: 4, backDraws: 0,
+    hands: {
+      east:  ts('3b','7b','8b','9b','2d','4d','5d','6d','2c','4c','5c','6c','RD'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','WW'),
+      north: ts('4b','5b','6b','8b','9b','1d','9d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+  },
+  // 9 — East draws 6b, still chow-trap. South waits for EW
+  {
+    player: 'east', action: 'draw', tile: t('6b'),
+    label: 'East draws 6 Bam · four chows complete, still 0 fan',
+    note: 'East drew 6b — 6-7-8b chow complete. East now has FOUR complete chows + pair = Ping Hu (1 fan only). The 3-point trap is fully exposed: a technically complete hand worth almost nothing!',
+    frontDraws: 4, backDraws: 0,
+    hands: {
+      east:  ts('3b','6b','7b','8b','9b','2d','4d','5d','6d','2c','4c','5c','6c'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','WW'),
+      north: ts('4b','5b','6b','8b','9b','1d','9d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD','RD'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+  },
+  // 10 — West claims and exposes, South draws EW back!
+  {
+    player: 'west', action: 'draw', tile: t('EW'),
+    label: 'West draws E Wind, South picks it up and discards something else',
+    note: 'West draws EW — the exact tile South needs! South positions to claim this EW when discarded (or draws another copy). Now South can build toward the honor pung.',
+    frontDraws: 4, backDraws: 0,
+    hands: {
+      east:  ts('3b','6b','7b','8b','9b','2d','4d','5d','6d','2c','4c','5c','6c'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','EW'),
+      north: ts('4b','5b','6b','8b','9b','1d','9d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD','RD'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+  },
+  // 11 — North improves but not enough. South waits
+  {
+    player: 'north', action: 'draw', tile: t('7b'),
+    label: 'North draws 7 Bam · two chows forming',
+    note: 'North draws 7b — now has 4-5-6b and 7-8-9b chows. But still needs more for 3 fan. North improving slowly.',
+    frontDraws: 5, backDraws: 0,
+    hands: {
+      east:  ts('3b','6b','7b','8b','9b','2d','4d','5d','6d','2c','4c','5c','6c'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','EW'),
+      north: ts('4b','5b','6b','7b','8b','9b','1d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD','RD'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+  },
+  // 12 — East tenpai but still only 1 fan trapped. South close
+  {
+    player: 'east', action: 'draw', tile: t('2b'),
+    label: 'East draws 2 Bam · tenpai but still only 1 fan',
+    note: 'East draws 2b and is now tenpai (waiting). But wait: 2-3-4b + 6-7-8b + 4-5-6d + 4-5-6c + pair = still only Ping Hu (1 fan). Even at tenpai, East cannot win. The chow trap is complete.',
+    frontDraws: 5, backDraws: 0,
+    hands: {
+      east:  ts('2b','3b','6b','7b','8b','2d','4d','5d','6d','2c','4c','5c','6c'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','EW'),
+      north: ts('4b','5b','6b','7b','8b','9b','1d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD','RD','9b'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+  },
+  // 13 — South draws/gets another EW! Tenpai on winning
+  {
+    player: 'south', action: 'draw', tile: t('EW'),
+    label: 'South draws E Wind · TENPAI · EW pung complete!',
+    note: 'South drew another EW (or claimed from discard)! Now tenpai: 1-2-3b, 4-5-6b, 7-8-9b, WD pung, EW pung. Waiting only on... nothing, this hand is ready! Next draw wins.',
+    frontDraws: 5, backDraws: 0,
+    hands: {
+      east:  ts('2b','3b','6b','7b','8b','2d','4d','5d','6d','2c','4c','5c','6c'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','EW'),
+      north: ts('4b','5b','6b','7b','8b','9b','1d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: NM(), flowers: NF(),
+    discards: { east: ts('NW','GD','RD','9b'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+  },
+  // 14 — South wins! Self-draw or claim, 5 fan Half Flush!
+  {
+    player: 'south', action: 'win', tile: t('EW'),
+    label: 'South wins — EW pung complete · 5 fan Half Flush!',
+    note: 'South won with: 1-2-3b, 4-5-6b, 7-8-9b, WD pung, EW pung. All Bamboo + two honor pungs = Half Flush (3 fan) + WD pung (1 fan) + self-draw (1 fan) = 5 fan! The key: recognizing Half Flush early, hunting honor pungs, and transforming the EW pair into a pung.',
+    frontDraws: 5, backDraws: 0,
+    hands: {
+      east:  ts('2b','3b','6b','7b','8b','2d','4d','5d','6d','2c','4c','5c','6c'),
+      south: ts('1b','2b','3b','4b','5b','6b','7b','8b','9b','WD','WD','WD','EW'),
+      west:  ts('1b','3b','5b','2d','3d','4d','7d','8d','1c','5c','8c','9c','EW'),
+      north: ts('4b','5b','6b','7b','8b','9b','1d','4c','7c','9c','WD','NW','EW','SW'),
+    },
+    melds: { east: [], south: [], west: [], north: [] },
+    flowers: NF(),
+    discards: { east: ts('NW','GD','RD','9b'), south: ts('2c','EW'), west: ts('SW','2d'), north: ts('WW') },
+    winGroups: [
+      ts('1b','2b','3b'),
+      ts('4b','5b','6b'),
+      ts('7b','8b','9b'),
+      ts('WD','WD','WD'),
+      ts('EW','EW'),
+    ],
+  },
+];

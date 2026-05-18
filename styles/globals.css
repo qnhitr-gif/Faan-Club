@@ -3,6 +3,16 @@
 @tailwind utilities;
 
 :root {
+  /* ── Spec tokens ── */
+  --green-950: #0e2716; --green-900: #14361f; --green-800: #1c4a2a;
+  --green-700: #235836; --green-600: #2f6b44; --green-500: #3d8456;
+  --green-200: #c8d8c9; --green-100: #dde6d6; --green-50: #eef0e2;
+  --paper: #f5f0e3; --rice: #faf6ec; --rice-2: #f1ead4;
+  --paper-2: #ede5d0; --paper-3: #e2d8bf; --paper-white: #fcfaf3;
+  --ink: #16170f; --ink-2: #44463a; --ink-3: #7a7a6a;
+  --red: #b8302a; --red-deep: #8a201a;
+  --blue-tile: #1e3a8a; --gold: #c08838;
+
   --bg: #FBF8F2;
   --bg-elev: #FFFFFF;
   --text-primary: #2C2A26;
@@ -10,7 +20,18 @@
   --text-tertiary: #8A8678;
   --border-tertiary: rgba(44, 42, 38, 0.12);
   --border-secondary: rgba(44, 42, 38, 0.22);
-  --info-bg: rgba(61, 110, 47, 0.08);
+  --border-strong: rgba(44, 42, 38, 0.4);
+  --info-bg: rgba(35, 88, 54, 0.08);
+
+  /* Homepage */
+  --bg-warm: #F5F0E1;
+  --bg-card: #EDE8D4;
+  --text-heading: #16170f;
+  --accent-green-text: #1c4a2a;
+  --accent-green-deep: #235836;
+  --border-green-subtle: rgba(28, 74, 42, 0.12);
+  --border-green-faint: rgba(28, 74, 42, 0.15);
+  --highlight-green: rgba(200, 216, 201, 0.5);
 }
 
 .dark {
@@ -21,7 +42,18 @@
   --text-tertiary: #807C70;
   --border-tertiary: rgba(242, 239, 230, 0.12);
   --border-secondary: rgba(242, 239, 230, 0.22);
+  --border-strong: rgba(242, 239, 230, 0.4);
   --info-bg: rgba(151, 196, 89, 0.10);
+
+  /* Homepage */
+  --bg-warm: #14130F;
+  --bg-card: #1E1D19;
+  --text-heading: #F2EFE6;
+  --accent-green-text: #7ab887;
+  --accent-green-deep: #6aaa7a;
+  --border-green-subtle: rgba(242, 239, 230, 0.12);
+  --border-green-faint: rgba(242, 239, 230, 0.15);
+  --highlight-green: rgba(100, 160, 110, 0.25);
 }
 
 html, body {
@@ -30,9 +62,19 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+[style*="--font-display"],
+.font-display {
+  font-variation-settings: 'SOFT' 100, 'opsz' 72;
+  font-optical-sizing: none;
+}
+
+h1[style*="--font-display"] {
+  font-variation-settings: 'SOFT' 50, 'opsz' 144 !important;
+}
+
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.7;
 }
 
@@ -45,8 +87,60 @@ body {
   .bg-info { background-color: var(--info-bg); }
   .border-tertiary { border-color: var(--border-tertiary); }
   .border-secondary { border-color: var(--border-secondary); }
+  .border-strong { border-color: var(--border-strong); }
   .hairline { border-width: 0.5px; border-color: var(--border-tertiary); }
   .hairline-strong { border-width: 0.5px; border-color: var(--border-secondary); }
+}
+
+/* ── Home page layout ── */
+.hero-grid {
+  grid-template-columns: 1.05fr .95fr !important;
+}
+.covers-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+@media (max-width: 1023px) {
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    min-height: unset !important;
+  }
+  .covers-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 639px) {
+  .hero-grid { gap: 32px !important; }
+  .covers-grid { gap: 12px !important; }
+  div[style*="padding: '0 40px'"],
+  div[style*='padding: "0 40px"'] { padding: 0 24px !important; }
+}
+
+/* ── Home page interactive classes ── */
+.cover-card {
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  cursor: pointer;
+}
+.cover-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--green-700) !important;
+  box-shadow: 0 8px 32px rgba(14,39,22,0.1);
+}
+
+.way-row {
+  transition: padding-left 0.22s ease, background 0.22s ease;
+}
+.way-row:hover {
+  background: linear-gradient(90deg, rgba(28,74,42,0.05) 0%, transparent 80%);
+  padding-left: 14px;
+}
+
+.way-arrow {
+  transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+}
+.way-row:hover .way-arrow {
+  background: var(--green-700) !important;
+  color: #f5f0e3 !important;
+  transform: rotate(-10deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -55,3 +149,13 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Cookbook chapter breadcrumb strip ── */
+.crumb-strip { border-bottom: 1px solid rgba(20,54,31,.1); }
+.crumb { max-width: 1280px; margin: 0 auto; padding: 18px 60px; display: flex; justify-content: space-between; align-items: center; font-family: 'Newsreader', serif; font-size: 15px; font-weight: 400; color: #44463a; }
+.crumb a { color: #44463a; text-decoration: none; transition: color .15s; }
+.crumb a:hover { color: #1c4a2a; }
+.crumb .sep { margin: 0 6px; color: #7a7a6a; opacity: .6; }
+.crumb .here { color: #16170f; }
+.crumb .right { display: flex; align-items: center; gap: 24px; }
+@media (max-width: 640px) { .crumb { padding: 14px 24px; } .crumb .right { display: none; } }

@@ -3,8 +3,9 @@ import { Tile } from './Tile';
 
 interface TileRowProps {
   tiles: Array<TileFace | null>;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   gap?: 'tight' | 'normal' | 'loose';
+  nowrap?: boolean;
   className?: string;
 }
 
@@ -14,9 +15,9 @@ const GAP: Record<NonNullable<TileRowProps['gap']>, string> = {
   loose: 'gap-3',
 };
 
-export function TileRow({ tiles, size = 'md', gap = 'normal', className = '' }: TileRowProps) {
+export function TileRow({ tiles, size = 'md', gap = 'normal', nowrap = false, className = '' }: TileRowProps) {
   return (
-    <div className={`flex flex-wrap items-end ${GAP[gap]} ${className}`}>
+    <div className={`flex items-end ${nowrap ? 'flex-nowrap' : 'flex-wrap'} ${GAP[gap]} ${className}`}>
       {tiles.map((face, i) => (
         <Tile key={i} face={face ?? undefined} size={size} />
       ))}

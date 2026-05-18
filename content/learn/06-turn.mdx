@@ -1,30 +1,114 @@
 ---
-number: 6
-slug: turn
-title: The turn
-description: Draw, decide, discard. The whole game lives in that loop.
-readingTime: 3 min
+number: 3
+slug: how-a-round-flows
+title: How a round flows
+description: Draw, decide, discard. How calls let anyone intercept a tile before the next turn begins.
+readingTime: 6 min
+hideHeader: true
 ---
 
-Once the deal is finished, play begins with East — the dealer — and proceeds counter-clockwise around the table.
+<ChapterHeader n={3} plain="How a round" italic="flows." />
 
-## A turn, in three beats
+Before the first tile is drawn, the table goes through a setup: seats are assigned by dice roll, the wall is built, and East deals 13 tiles to each player with 14 for themselves. From there, the game runs on a simple loop.
 
-1. **Draw.** Take one tile from the front of the wall. Your hand is now 14 tiles.
-2. **Decide.** Look at the new tile. Does it improve your hand? Could it complete a set? Could it be the pair you needed?
-3. **Discard.** Place one tile face-up in the center of the table. Your hand is back to 13. Your turn is over.
+<HowARoundFlows />
 
-That's it. Every turn is one tile in, one tile out, until somebody wins.
+Every turn follows the same three-beat rhythm.
 
-## What the discard does
+<Pillars>
+  <Pillar n={1} title="Draw">
+    Take one tile from the front of the wall. Your hand is now 14 tiles. This is the only moment in the game where the future is unknown — anything could arrive.
+  </Pillar>
+  <Pillar n={2} title="Decide">
+    Look at the new tile. Does it improve your hand? Could it complete a set, finish a sequence, or become the pair you needed? This step is where mahjong lives — every decision shapes the hand.
+  </Pillar>
+  <Pillar n={3} title="Discard">
+    Place one tile face-up in the center of the table. Your hand is back to 13. Your turn is over — but the tile you threw doesn't disappear.
+  </Pillar>
+  <Pillar n={4} title="Until someone wins">
+    One tile in, one tile out, repeated until a player completes four sets and a pair and declares a win.
+  </Pillar>
+</Pillars>
 
-The discarded tile sits face-up, visible to everyone. It does two things:
+<Callout title="See it in action">
+The setup process is easier to grasp in motion than in words. The **interactive room** walks you through every step — seat selection, dice roll, wall break, and deal — one click at a time. [Go to the interactive room →](/practice/setup)
+</Callout>
 
-- It's information — every player can see what's been thrown away.
-- It's *available* — for one brief moment, before the next player draws, anyone at the table can claim it under specific rules.
+<Callout title="Where the depth lives">
+Most of mahjong's richness is in the *decide* step. A new tile arrives and you must choose: discard the new one and stay the course? Break up an old plan for a better one? Hold something dangerous because it's the only path to a high-scoring hand?
+</Callout>
 
-This claiming is what *calls* are. Pung, chow, and kong can all be made by claiming a discarded tile from the right player, and they're powerful enough that the next chapter is dedicated to them.
+## Calls — intercepting a discard
 
-<Callout title="Why this loop is the whole game">
-Most of mahjong's depth lives in the *decide* step. A new tile arrives, and you have to choose: keep what you have and throw the new one away? Break up an old plan to commit to a new one? Hold something dangerous because it's the only chance at a high-scoring hand?
+The discarded tile sits face-up briefly before the next draw. In that window, any other player can *call* it — claiming the tile to complete one of their sets. This is what makes mahjong social: a single discard can change four people's plans at once.
+
+There are three calls.
+
+<Compare>
+  <CompareSide title="Pung — three of a kind" tone="positive">
+    You hold two of a tile. Someone discards the third. Call *pung*, take it, expose all three face-up, and discard one of your other tiles. **Anyone at the table can pung** — it doesn't matter whose turn it was.
+
+    <TileRow tiles={[
+      { suit: 'dot', value: 8 },
+      { suit: 'dot', value: 8 },
+      { suit: 'dot', value: 8 },
+    ]} />
+  </CompareSide>
+  <CompareSide title="Chow — a sequence" tone="neutral">
+    You can complete a three-in-a-row using the discarded tile. Call *chow*, take it, expose the three, and discard. **Restriction: you can only chow from the player immediately before you** — the one on your right.
+
+    <TileRow tiles={[
+      { suit: 'bamboo', value: 5 },
+      { suit: 'bamboo', value: 6 },
+      { suit: 'bamboo', value: 7 },
+    ]} />
+  </CompareSide>
+</Compare>
+
+### Kong — the fourth tile
+
+If you have three of a tile and someone discards the fourth, call *kong*. Expose all four, then draw a replacement tile from the back of the wall before discarding — the wall effectively compensates you for the extra tile locked up in the kong.
+
+<TileRow tiles={[
+  { suit: 'dragon', value: 'green' },
+  { suit: 'dragon', value: 'green' },
+  { suit: 'dragon', value: 'green' },
+  { suit: 'dragon', value: 'green' },
+]} />
+
+You can also kong on your own turn — if you draw the fourth tile of a triplet already in your hand, declare a *concealed kong*. It scores more generously than an open kong.
+
+## The call trade-off
+
+<Compare>
+  <CompareSide title="Call — faster, but visible" tone="cautious">
+    Calling skips turn order and locks in a set immediately. The risk: your exposed tiles are visible to everyone. Opponents will stop discarding tiles that help you.
+  </CompareSide>
+  <CompareSide title="Stay concealed — slower, but hidden" tone="positive">
+    A fully concealed hand scores higher than the same hand with exposed sets. Sometimes the right move is to let a useful discard pass and wait for the wall to deliver it naturally.
+  </CompareSide>
+</Compare>
+
+<Callout title="Priority when multiple players call">
+If two or more players want the same discard: **winning hand beats everything** → then **kong or pung** → then **chow**. Pung and kong ignore turn order; chow is only available to the player immediately after the discarder.
+</Callout>
+
+## The wall — and what happens when it runs out
+
+The wall starts with **136 tiles** (144 minus the 8 bonus flower/season tiles). Each player draws 13 at the start, East draws 14 — so 70 tiles are dealt out, leaving **66 tiles** in the wall to draw from during play.
+
+A few tiles are held back: the last 14 tiles in the wall are the *dead wall*, reserved as replacement draws for kongs. Players draw only from the *live wall* in front of them.
+
+### When the wall empties
+
+If the live wall runs out before anyone wins, the round ends in a **draw** — called a *goulash* or *chow kong* depending on the table. No points change hands.
+
+<Callout title="What draw means for East">
+A draw is neither a win nor a loss. East stays East and the round is replayed — no rotation. Only a win by another player (or East losing by deal) rotates the wind seat.
+</Callout>
+
+A wall that consistently runs dry usually means the table is playing too defensively — everyone holding safe tiles, nobody pressing toward a win. As the wall shrinks below 20 tiles, the calculus shifts: a risky discard gets safer (fewer rounds left for it to hit anyone), but chasing a rare hand becomes irrational.
+
+<Callout title="Ready to go deeper?">
+Knowing the loop is one thing. Knowing *what* to discard and *when* to call is another. The **Basic Strategy** chapter covers hand shapes, reading the table, and when to attack or defend. [Go to Basic Strategy →](/learn/strategy)
 </Callout>
