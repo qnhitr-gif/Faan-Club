@@ -551,7 +551,6 @@ function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnI
 
   const badges = (
     <>
-      {you && <span className={BADGE_CLS}>you</span>}
       {wind === 'east' && <span className={BADGE_CLS}>dealer</span>}
     </>
   );
@@ -560,7 +559,7 @@ function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnI
     <span
       style={{ ...pillGlow, minWidth: PILL_W, display: 'inline-block' }}
       className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-        you ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
+        wind === 'east' ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
       } ${isActive ? 'ring-1 ring-amber-400/80' : ''}`}
     >
       <span className="font-medium">Player {PLAYER_NUMS[wind]}</span>
@@ -776,7 +775,7 @@ export function RoundDemo({ yourSeat, state, breakInfo }: {
           {pa(topWind, false, true, true)}
         </div>
         <div style={{ gridArea: 'center', position: 'relative' }}>
-          <MahjongMat className="p-3">
+          <MahjongMat size={367}>
             <WallsWithBreak
               breakWall={breakPoint.wall} breakPos={breakPoint.pos}
               yourSeat={yourSeat} tilesDrawn={53}

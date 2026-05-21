@@ -88,8 +88,15 @@ export function useDealHands({ yourSeat, onComplete, onReset }: {
 
 interface DealHandsProps { yourSeat: WindValue; state: DealHandsState; }
 
-// East=1,5,9,13,17 | South=2,6,10,14,18 | West=3,7,11,15 | North=4,8,12,16
 const WALL_BY_SEAT: WindValue[] = ['east', 'south', 'west', 'north'];
+
+// Returns tile positions (1–18) on the first wall for a given wind
+function dealSeq(wind: WindValue): string {
+  const p = WALL_BY_SEAT.indexOf(wind); // 0=East,1=South,2=West,3=North
+  const nums: number[] = [];
+  for (let n = p + 1; n <= 18; n += 4) nums.push(n);
+  return nums.join(', ');
+}
 const WIND_LABELS: Record<WindValue, string> = { east: 'East', south: 'South', west: 'West', north: 'North' };
 const WIND_INITIAL: Record<WindValue, string> = { east: 'E', south: 'S', west: 'W', north: 'N' };
 const PLAYER_NUMS: Record<WindValue, number> = { east: 1, south: 2, west: 3, north: 4 };
@@ -133,13 +140,14 @@ const DEAL_STEPS: ReadonlyArray<{
 
 // Wall constants — match BuildWalls
 const WALL_LEN = 18;
-const TILE     = 16;
+const TILE_W   = 14;  // tile width
+const TILE_H   = 20;  // tile height (portrait ~3:4)
 const GAP      = 1;
-const WALL_PX  = WALL_LEN * TILE + (WALL_LEN - 1) * GAP; // 269
-const STEP     = TILE + GAP;                               // 15
-const GRID     = TILE + 2 + WALL_PX + 2 + TILE;           // 301
-const OFF      = TILE + 2;                                 // 16
-const INNER    = OFF + WALL_PX;                            // 285
+const WALL_PX  = WALL_LEN * TILE_W + (WALL_LEN - 1) * GAP; // 269
+const STEP     = TILE_W + GAP;                               // 15
+const GRID     = TILE_H + 2 + WALL_PX + 2 + TILE_H;         // 313
+const OFF      = TILE_H + 2;                                 // 22
+const INNER    = OFF + WALL_PX;                              // 291
 
 type WallPos = 'top' | 'right' | 'bottom' | 'left';
 
@@ -167,12 +175,12 @@ function wallVisualPos(wall: WindValue, wpos: Record<WallPos, WindValue>): WallP
 }
 
 function tileCenterForPos(pos: WallPos, idx: number): { x: number; y: number } {
-  const c = OFF + idx * STEP + TILE / 2;
+  const c = OFF + idx * STEP + TILE_W / 2;
   switch (pos) {
-    case 'top':    return { x: c, y: TILE / 2 };
-    case 'bottom': return { x: c, y: GRID - TILE / 2 };
-    case 'right':  return { x: GRID - TILE / 2, y: c };
-    case 'left':   return { x: TILE / 2, y: c };
+    case 'top':    return { x: c, y: TILE_H / 2 };
+    case 'bottom': return { x: c, y: GRID - TILE_H / 2 };
+    case 'right':  return { x: GRID - TILE_H / 2, y: c };
+    case 'left':   return { x: TILE_H / 2, y: c };
   }
 }
 
@@ -234,61 +242,111 @@ function buildDrawSequence(
   return seq;
 }
 
-function EmptySlot() {
-  return (
-    <svg width={TILE} height={TILE} viewBox="0 0 14 14" aria-hidden>
-      <rect width={14} height={14} rx={2} fill="#0f1f0a" fillOpacity={0.5} />
+function EmptySlot({ landscape }: { landscape?: boolean }) {
+  return landscape ? (
+    <svg width={TILE_H} height={TILE_W} viewBox="0 0 20 14" aria-hidden>
+      <rect width={20} height={14} rx={2} fill="#0f1f0a" fillOpacity={0.5} />
+    </svg>
+  ) : (
+    <svg width={TILE_W} height={TILE_H} viewBox="0 0 14 20" aria-hidden>
+      <rect width={14} height={20} rx={2} fill="#0f1f0a" fillOpacity={0.5} />
     </svg>
   );
 }
 
-function NormalTile({ lit, next }: { lit?: boolean; next?: boolean }) {
+function NormalTile({ lit, next, lightNext, landscape }: { lit?: boolean; next?: boolean; lightNext?: boolean; landscape?: boolean }) {
+  const fill = next ? '#7bc458' : lightNext ? '#a0d080' : lit ? '#2d6b44' : '#235836';
+  const opacity = next ? 0.15 : lightNext ? 0.2 : 0.4;
+  if (landscape) {
+    return (
+      <svg width={TILE_H} height={TILE_W} viewBox="0 0 20 14" aria-hidden
+        style={next ? { filter: 'drop-shadow(0 0 3px rgba(255,210,60,0.9))' } : undefined}>
+        <rect width={20} height={14} rx={2} fill={fill} />
+        <rect x={1.5} y={1.5} width={17} height={11} rx={1.5} fill="none"
+          stroke="#1c4a2a" strokeOpacity={opacity} strokeWidth={0.5} />
+        <line x1={10} y1={1.5} x2={10} y2={12.5}
+          stroke="#1c4a2a" strokeOpacity={next ? 0.1 : lightNext ? 0.15 : 0.25} strokeWidth={0.5} />
+      </svg>
+    );
+  }
   return (
-    <svg width={TILE} height={TILE} viewBox="0 0 14 14" aria-hidden
+    <svg width={TILE_W} height={TILE_H} viewBox="0 0 14 20" aria-hidden
       style={next ? { filter: 'drop-shadow(0 0 3px rgba(255,210,60,0.9))' } : undefined}>
-      <rect width={14} height={14} rx={2} fill={next ? '#7bc458' : lit ? '#2d6b44' : '#235836'} />
-      <rect x={1.5} y={1.5} width={11} height={11} rx={1.5} fill="none"
-        stroke="#1c4a2a" strokeOpacity={next ? 0.15 : 0.4} strokeWidth={0.5} />
-      <line x1={1.5} y1={7} x2={12.5} y2={7}
-        stroke="#1c4a2a" strokeOpacity={next ? 0.1 : 0.25} strokeWidth={0.5} />
+      <rect width={14} height={20} rx={2} fill={fill} />
+      <rect x={1.5} y={1.5} width={11} height={17} rx={1.5} fill="none"
+        stroke="#1c4a2a" strokeOpacity={opacity} strokeWidth={0.5} />
+      <line x1={1.5} y1={10} x2={12.5} y2={10}
+        stroke="#1c4a2a" strokeOpacity={next ? 0.1 : lightNext ? 0.15 : 0.25} strokeWidth={0.5} />
     </svg>
   );
 }
 
-function WallRow({ wall, breakWall, depleted, upcoming }: {
+function WallRow({ wall, breakWall, depleted, upcoming, lightUpcoming, gapAfter, frontIdx, backIdx }: {
   wall: WindValue; breakWall: WindValue | null;
-  depleted?: Set<number>; upcoming?: Set<number>;
+  depleted?: Set<number>; upcoming?: Set<number>; lightUpcoming?: Set<number>; gapAfter?: number;
+  frontIdx?: number; backIdx?: number;
 }) {
   const active = breakWall === wall;
   return (
     <div className="flex" style={{ gap: GAP }}>
-      {Array.from({ length: WALL_LEN }).map((_, i) =>
-        depleted?.has(i) ? <EmptySlot key={i} />
-          : <NormalTile key={i} lit={active} next={upcoming?.has(i)} />
-      )}
+      {Array.from({ length: WALL_LEN }).map((_, i) => {
+        const extraRight = gapAfter === i ? 7 : 0;
+        const label = i === frontIdx ? 'F' : i === backIdx ? 'B' : null;
+        const tileEl = depleted?.has(i) ? <EmptySlot /> : <NormalTile lit={active} next={upcoming?.has(i)} lightNext={lightUpcoming?.has(i)} />;
+        const inner = label ? (
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            {tileEl}
+            <span style={{
+              position: 'absolute', inset: 0, display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontSize: 8, fontWeight: 'bold', color: '#faf6ec',
+              fontFamily: 'sans-serif', lineHeight: 1, pointerEvents: 'none',
+            }}>{label}</span>
+          </div>
+        ) : tileEl;
+        return extraRight
+          ? <div key={i} style={{ marginRight: extraRight }}>{inner}</div>
+          : <React.Fragment key={i}>{inner}</React.Fragment>;
+      })}
     </div>
   );
 }
 
-function WallCol({ wall, breakWall, depleted, upcoming }: {
+function WallCol({ wall, breakWall, depleted, upcoming, lightUpcoming, gapAfter, frontIdx, backIdx }: {
   wall: WindValue; breakWall: WindValue | null;
-  depleted?: Set<number>; upcoming?: Set<number>;
+  depleted?: Set<number>; upcoming?: Set<number>; lightUpcoming?: Set<number>; gapAfter?: number;
+  frontIdx?: number; backIdx?: number;
 }) {
   const active = breakWall === wall;
   return (
     <div className="flex flex-col" style={{ gap: GAP }}>
-      {Array.from({ length: WALL_LEN }).map((_, i) =>
-        depleted?.has(i) ? <EmptySlot key={i} />
-          : <NormalTile key={i} lit={active} next={upcoming?.has(i)} />
-      )}
+      {Array.from({ length: WALL_LEN }).map((_, i) => {
+        const extraBottom = gapAfter === i ? 7 : 0;
+        const label = i === frontIdx ? 'F' : i === backIdx ? 'B' : null;
+        const tileEl = depleted?.has(i) ? <EmptySlot landscape /> : <NormalTile lit={active} next={upcoming?.has(i)} lightNext={lightUpcoming?.has(i)} landscape />;
+        const inner = label ? (
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            {tileEl}
+            <span style={{
+              position: 'absolute', inset: 0, display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontSize: 8, fontWeight: 'bold', color: '#faf6ec',
+              fontFamily: 'sans-serif', lineHeight: 1, pointerEvents: 'none',
+            }}>{label}</span>
+          </div>
+        ) : tileEl;
+        return extraBottom
+          ? <div key={i} style={{ marginBottom: extraBottom }}>{inner}</div>
+          : <React.Fragment key={i}>{inner}</React.Fragment>;
+      })}
     </div>
   );
 }
 
-export function WallsWithBreak({ breakWall, breakPos, yourSeat, tilesDrawn, showDealArrow, showMarkers, nextTileCount, extraFront = 0, extraBack = 0 }: {
+export function WallsWithBreak({ breakWall, breakPos, yourSeat, tilesDrawn, showDealArrow, showMarkers, nextTileCount, extraFront = 0, extraBack = 0, dealerJump = false }: {
   breakWall: WindValue | null; breakPos: number; yourSeat: WindValue; tilesDrawn: number;
   showDealArrow: boolean; showMarkers: boolean; nextTileCount: number;
-  extraFront?: number; extraBack?: number;
+  extraFront?: number; extraBack?: number; dealerJump?: boolean;
 }) {
   const wpos = getWallPositions(yourSeat);
   // gapIdx depends on which end of the wall is East's "right".
@@ -301,6 +359,16 @@ export function WallsWithBreak({ breakWall, breakPos, yourSeat, tilesDrawn, show
   const gapIdx = breakWall
     ? (breakFromFirst ? breakPos - 1 : WALL_LEN - breakPos)
     : -1;
+  // Visual gap separating the first 2 drawn tiles from the rest of the wall.
+  // fromFirst: drawing goes up in index, so gap goes after tile gapIdx+2 (2nd drawn tile).
+  // !fromFirst: drawing goes down in index, gap goes after tile gapIdx-3 (right of 3rd drawn tile).
+  // Place the visual gap right at the break opening:
+  // fromFirst=true  → gap after break tile (between break and 1st drawn)
+  // fromFirst=false → gap after 1st drawn tile (between 1st drawn and break)
+  const gapAfterForBreak = gapIdx < 0 ? undefined
+    : breakFromFirst
+      ? (gapIdx < WALL_LEN - 1  ? gapIdx     : undefined)
+      : (gapIdx > 0             ? gapIdx - 1 : undefined);
   // "draw here" only shows before any tiles have been dealt
   const dHere  = breakWall && gapIdx >= 0 && tilesDrawn === 0
     ? drawHereDot(breakWall, gapIdx, wpos) : null;
@@ -324,22 +392,31 @@ export function WallsWithBreak({ breakWall, breakPos, yourSeat, tilesDrawn, show
 
   // Upcoming tiles: the next batch to be drawn (highlighted in bright green)
   const upcomingByWall: Partial<Record<WindValue, Set<number>>> = {};
+  // Light upcoming: dealer's jump — all 3 columns in softer green ([1'][3'] for East, [1][2][2'] for others)
+  const lightUpcomingByWall: Partial<Record<WindValue, Set<number>>> = {};
   if (nextTileCount > 0) {
-    const nextSlots = Math.ceil(nextTileCount / 2);
-    for (const { wall, idx } of drawSeq.slice(slotsConsumed, slotsConsumed + nextSlots)) {
-      if (!upcomingByWall[wall]) upcomingByWall[wall] = new Set();
-      upcomingByWall[wall]!.add(idx);
+    if (dealerJump && nextTileCount === 2) {
+      // Columns 1 and 3 lit in lighter green (East [1'][3'], South [1] from col 1)
+      for (const slot of [drawSeq[slotsConsumed], drawSeq[slotsConsumed + 2]]) {
+        if (slot) {
+          if (!lightUpcomingByWall[slot.wall]) lightUpcomingByWall[slot.wall] = new Set();
+          lightUpcomingByWall[slot.wall]!.add(slot.idx);
+        }
+      }
+    } else {
+      const nextSlots = nextTileCount <= 2 ? nextTileCount : Math.ceil(nextTileCount / 2);
+      for (const { wall, idx } of drawSeq.slice(slotsConsumed, slotsConsumed + nextSlots)) {
+        if (!upcomingByWall[wall]) upcomingByWall[wall] = new Set();
+        upcomingByWall[wall]!.add(idx);
+      }
     }
   }
 
-  // Clockwise path: top-left → top-right → bottom-right → bottom-left → up
-  const cwPath = `M ${OFF + 4},${OFF} L ${INNER},${OFF} L ${INNER},${INNER} L ${OFF},${INNER} L ${OFF},${INNER - 8}`;
-
   const labelData: Array<{ x: number; y: number; wall: WindValue; rotate?: string }> = [
-    { x: GRID / 2, y: TILE / 2 + 3,          wall: wpos.top },
-    { x: GRID / 2, y: GRID - TILE / 2 + 3,   wall: wpos.bottom },
-    { x: GRID - TILE / 2, y: GRID / 2, wall: wpos.right, rotate: `rotate(90,${GRID - TILE / 2},${GRID / 2})` },
-    { x: TILE / 2,        y: GRID / 2, wall: wpos.left,  rotate: `rotate(90,${TILE / 2},${GRID / 2})` },
+    { x: GRID / 2, y: TILE_H / 2 + 3,          wall: wpos.top },
+    { x: GRID / 2, y: GRID - TILE_H / 2 + 3,   wall: wpos.bottom },
+    { x: GRID - TILE_H / 2, y: GRID / 2, wall: wpos.right, rotate: `rotate(90,${GRID - TILE_H / 2},${GRID / 2})` },
+    { x: TILE_H / 2,        y: GRID / 2, wall: wpos.left,  rotate: `rotate(90,${TILE_H / 2},${GRID / 2})` },
   ];
 
   // Front / back positions shown after dealing completes
@@ -356,15 +433,15 @@ export function WallsWithBreak({ breakWall, breakPos, yourSeat, tilesDrawn, show
     <div className="relative" style={{ width: GRID, height: GRID }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: `${TILE}px ${WALL_PX}px ${TILE}px`,
-        gridTemplateRows: `${TILE}px ${WALL_PX}px ${TILE}px`,
+        gridTemplateColumns: `${TILE_H}px ${WALL_PX}px ${TILE_H}px`,
+        gridTemplateRows: `${TILE_H}px ${WALL_PX}px ${TILE_H}px`,
         gap: 2,
       }}>
-        <span /><WallRow wall={wpos.top}    breakWall={breakWall} depleted={depletedByWall[wpos.top]}    upcoming={upcomingByWall[wpos.top]} /><span />
-        <WallCol wall={wpos.left}  breakWall={breakWall} depleted={depletedByWall[wpos.left]}   upcoming={upcomingByWall[wpos.left]} />
+        <span /><div style={{ transform: 'rotate(-17deg) translateY(37px)', transformOrigin: 'center' }}><WallRow wall={wpos.top}    breakWall={breakWall} depleted={depletedByWall[wpos.top]}    upcoming={upcomingByWall[wpos.top]}    lightUpcoming={lightUpcomingByWall[wpos.top]}    gapAfter={breakWall === wpos.top    ? gapAfterForBreak : undefined} frontIdx={frontSlot?.wall === wpos.top    ? frontSlot.idx : undefined} backIdx={backSlot?.wall === wpos.top    ? backSlot.idx : undefined} /></div><span />
+        <div style={{ transform: 'rotate(-17deg) translateX(37px)', transformOrigin: 'center' }}><WallCol wall={wpos.left}  breakWall={breakWall} depleted={depletedByWall[wpos.left]}   upcoming={upcomingByWall[wpos.left]}   lightUpcoming={lightUpcomingByWall[wpos.left]}   gapAfter={breakWall === wpos.left   ? gapAfterForBreak : undefined} frontIdx={frontSlot?.wall === wpos.left   ? frontSlot.idx : undefined} backIdx={backSlot?.wall === wpos.left   ? backSlot.idx : undefined} /></div>
         <div style={{ width: WALL_PX, height: WALL_PX }} />
-        <WallCol wall={wpos.right} breakWall={breakWall} depleted={depletedByWall[wpos.right]}  upcoming={upcomingByWall[wpos.right]} />
-        <span /><WallRow wall={wpos.bottom} breakWall={breakWall} depleted={depletedByWall[wpos.bottom]} upcoming={upcomingByWall[wpos.bottom]} /><span />
+        <div style={{ transform: 'rotate(-17deg) translateX(-37px)', transformOrigin: 'center' }}><WallCol wall={wpos.right} breakWall={breakWall} depleted={depletedByWall[wpos.right]}  upcoming={upcomingByWall[wpos.right]}  lightUpcoming={lightUpcomingByWall[wpos.right]}  gapAfter={breakWall === wpos.right  ? gapAfterForBreak : undefined} frontIdx={frontSlot?.wall === wpos.right  ? frontSlot.idx : undefined} backIdx={backSlot?.wall === wpos.right  ? backSlot.idx : undefined} /></div>
+        <span /><div style={{ transform: 'rotate(-17deg) translateY(-37px)', transformOrigin: 'center' }}><WallRow wall={wpos.bottom} breakWall={breakWall} depleted={depletedByWall[wpos.bottom]} upcoming={upcomingByWall[wpos.bottom]} lightUpcoming={lightUpcomingByWall[wpos.bottom]} gapAfter={breakWall === wpos.bottom ? gapAfterForBreak : undefined} frontIdx={frontSlot?.wall === wpos.bottom ? frontSlot.idx : undefined} backIdx={backSlot?.wall === wpos.bottom ? backSlot.idx : undefined} /></div><span />
       </div>
 
       <svg className="absolute inset-0 pointer-events-none overflow-visible"
@@ -392,52 +469,32 @@ export function WallsWithBreak({ breakWall, breakPos, yourSeat, tilesDrawn, show
             </marker>
           </defs>
 
-          {showDealArrow && (
-            <path d={cwPath} stroke="#185FA5" strokeWidth={1.5} strokeDasharray="5 3"
-              fill="none" strokeOpacity={0.7} markerEnd="url(#arr-blue)" strokeLinecap="round" />
-          )}
-          {showDealArrow && (
-            <text x={OFF + 2} y={OFF - 3} textAnchor="start"
-              fontSize={8} fill="#185FA5" fillOpacity={0.8} fontFamily="sans-serif">
-              ↻ deal order
-            </text>
-          )}
 
-          {dHere && (() => {
-            const ta = drawHereTextAnchor(dHerePos, dHere.x, dHere.y);
-            return (
-              <text x={ta.x} y={ta.y} textAnchor={ta.anchor}
-                fontSize={7} fill="#A0392E" fontFamily="sans-serif">
-                draw here
-              </text>
-            );
-          })()}
+
 
           {/* Front / back labels after dealing */}
-          {frontSlot && (() => {
-            const fpos = wallVisualPos(frontSlot.wall, wpos);
-            const fc   = tileCenterForPos(fpos, frontSlot.idx);
-            const fta  = drawHereTextAnchor(fpos, fc.x, fc.y);
-            return (
-              <>
-                <circle cx={fc.x} cy={fc.y} r={5.5} fill="rgba(35,88,54,0.25)" stroke="#235836" strokeWidth={1.5} />
-                <text x={fta.x} y={fta.y} textAnchor={fta.anchor}
-                  fontSize={7} fill="#235836" fontFamily="sans-serif" fontWeight="bold">front</text>
-              </>
-            );
-          })()}
-          {backSlot && (() => {
-            const bpos = wallVisualPos(backSlot.wall, wpos);
-            const bc   = tileCenterForPos(bpos, backSlot.idx);
-            const bta  = drawHereTextAnchor(bpos, bc.x, bc.y);
-            return (
-              <text x={bta.x} y={bta.y} textAnchor={bta.anchor}
-                fontSize={7} fill="#C47A1E" fontFamily="sans-serif" fontWeight="bold">back</text>
-            );
-          })()}
         </svg>
       )}
     </div>
+  );
+}
+
+
+// Static direction arrow
+function DirArrow({ dir }: { dir: 'right' | 'up' | 'left' | 'down' }) {
+  const data: Record<string, { arc: string; head: string; headTransform: string }> = {
+    right: { arc: 'M 1,10 Q 14,17 27,10', head: 'M 21,5 L 27,10 L 21,16',  headTransform: 'rotate(-25,27,10)'  },
+    up:    { arc: 'M 10,27 Q 17,14 10,1',  head: 'M 5,7  L 10,1  L 16,6',   headTransform: 'rotate(-25,10,1)'   },
+    left:  { arc: 'M 27,18 Q 14,11 1,18',  head: 'M 7,23 L 1,18  L 7,12',   headTransform: 'rotate(-25,1,18)'   },
+    down:  { arc: 'M 18,1  Q 11,14 18,27', head: 'M 23,21 L 18,27 L 12,21', headTransform: 'rotate(-25,18,27)'  },
+  };
+  const { arc, head, headTransform } = data[dir];
+  return (
+    <svg width={28} height={28} viewBox="0 0 28 28" fill="none"
+      stroke="rgba(28,74,42,0.65)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d={arc} />
+      <path d={head} transform={headTransform} />
+    </svg>
   );
 }
 
@@ -499,14 +556,13 @@ function SeatArea({ wind, isYou, count, drawing, vertical, reverse }: {
 }) {
   const badges = (
     <>
-      {isYou && <span className={BADGE_CLS}>you</span>}
       {wind === 'east' && <span className={BADGE_CLS}>dealer</span>}
     </>
   );
 
   const pill = (
     <span style={{ minWidth: PILL_W, display: 'inline-block' }} className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-      isYou ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
+      wind === 'east' ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
     }`}>
       <span className="font-medium">Player {PLAYER_NUMS[wind]}</span>
       {' · '}{WIND_LABELS[wind]}
@@ -540,26 +596,40 @@ function SeatArea({ wind, isYou, count, drawing, vertical, reverse }: {
 export function DealHands({ yourSeat, state }: DealHandsProps) {
   const { phase, breakInfo, diceSum, tilesDrawnTotal, activeDrawers, nextTileCount, counts } = state;
 
+  // Dealer's jump: East draws tile 1 and tile 3, skipping tile 2.
+  // nextTileCount === 2 uniquely identifies this step (DEAL_STEPS[12]).
+  const isDealerJump = phase === 'dealing' && nextTileCount === 2;
+
   const bottomWind = yourSeat;
   const rightWind  = rotateSeat(yourSeat, 1);
   const topWind    = rotateSeat(yourSeat, 2);
   const leftWind   = rotateSeat(yourSeat, 3);
 
+  const showArrows = phase !== 'await-roll';
+
   return (
     <div className="flex flex-col gap-3 items-center">
       <div className="grid gap-2" style={{
-        gridTemplateAreas: '"tl . tr" ". center ." "bl . br"',
+        gridTemplateAreas: '"tl tmid tr" "lmid center rmid" "bl bmid br"',
         gridTemplateColumns: '80px max-content 80px',
         gridTemplateRows: '80px max-content 80px',
       }}>
-        <div style={{ gridArea: 'tl', marginLeft: '-44px' }} className="flex flex-col items-start justify-end">
+        <div style={{ gridArea: 'tl', marginLeft: '-44px' }} className="flex flex-col items-start justify-end gap-0.5">
+          {phase === 'await-deal' && <span className="text-[10px] text-tertiary pl-1" style={{ fontFamily: 'var(--font-mono)' }}>{dealSeq(leftWind)}</span>}
           <SeatArea wind={leftWind} isYou={leftWind === yourSeat} count={counts[leftWind]} drawing={activeDrawers.includes(leftWind)} />
         </div>
-        <div style={{ gridArea: 'tr', marginRight: '-44px' }} className="flex flex-col items-end justify-end">
+        <div style={{ gridArea: 'tmid', position: 'relative', zIndex: 2, transform: 'translateY(-35px)' }} className="flex items-center justify-center">
+          {showArrows && <DirArrow dir="left" />}
+        </div>
+        <div style={{ gridArea: 'tr', marginRight: '-44px' }} className="flex flex-col items-end justify-end gap-0.5">
+          {phase === 'await-deal' && <span className="text-[10px] text-tertiary pr-1" style={{ fontFamily: 'var(--font-mono)' }}>{dealSeq(topWind)}</span>}
           <SeatArea wind={topWind} isYou={topWind === yourSeat} count={counts[topWind]} drawing={activeDrawers.includes(topWind)} reverse />
         </div>
-        <div style={{ gridArea: 'center' }}>
-          <MahjongMat className="p-3">
+        <div style={{ gridArea: 'lmid', position: 'relative', zIndex: 2, transform: 'translateX(-35px)' }} className="flex items-center justify-center">
+          {showArrows && <DirArrow dir="down" />}
+        </div>
+        <div style={{ gridArea: 'center', position: 'relative', width: 367, height: 367 }}>
+          <MahjongMat size={367}>
             <WallsWithBreak
               breakWall={breakInfo?.wall ?? null}
               breakPos={breakInfo?.pos ?? 0}
@@ -568,13 +638,47 @@ export function DealHands({ yourSeat, state }: DealHandsProps) {
               showDealArrow={phase === 'await-deal'}
               showMarkers={phase === 'dealt'}
               nextTileCount={nextTileCount}
+              dealerJump={isDealerJump}
             />
           </MahjongMat>
+          <button
+            type="button"
+            onClick={state.resetDeal}
+            title="Reset deal"
+            aria-label="Reset deal"
+            style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 4,
+              width: 64, height: 64,
+              borderRadius: '50%',
+              background: 'transparent',
+              border: '1px solid rgba(28,74,42,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+            className="hover:border-brand-green/50 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width={28} height={28} viewBox="0 0 24 24" fill="none"
+              stroke="#b8302a" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
+              style={{ transform: 'scaleY(-1)' }}>
+              <path d="M3.5 15a9 9 0 1 0 8.5-12 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+          </button>
         </div>
-        <div style={{ gridArea: 'bl', marginLeft: '-44px' }} className="flex flex-col items-start justify-start">
+        <div style={{ gridArea: 'rmid', position: 'relative', zIndex: 2, transform: 'translateX(35px)' }} className="flex items-center justify-center">
+          {showArrows && <DirArrow dir="up" />}
+        </div>
+        <div style={{ gridArea: 'bl', marginLeft: '-44px' }} className="flex flex-col items-start justify-start gap-0.5">
+          {phase === 'await-deal' && <span className="text-[10px] text-tertiary pl-1" style={{ fontFamily: 'var(--font-mono)' }}>{dealSeq(bottomWind)}</span>}
           <SeatArea wind={bottomWind} isYou={bottomWind === yourSeat} count={counts[bottomWind]} drawing={activeDrawers.includes(bottomWind)} />
         </div>
-        <div style={{ gridArea: 'br', marginRight: '-44px' }} className="flex flex-col items-end justify-start">
+        <div style={{ gridArea: 'bmid', position: 'relative', zIndex: 2, transform: 'translateY(35px)' }} className="flex items-center justify-center">
+          {showArrows && <DirArrow dir="right" />}
+        </div>
+        <div style={{ gridArea: 'br', marginRight: '-44px' }} className="flex flex-col items-end justify-start gap-0.5">
+          {phase === 'await-deal' && <span className="text-[10px] text-tertiary pr-1" style={{ fontFamily: 'var(--font-mono)' }}>{dealSeq(rightWind)}</span>}
           <SeatArea wind={rightWind} isYou={rightWind === yourSeat} count={counts[rightWind]} drawing={activeDrawers.includes(rightWind)} reverse />
         </div>
       </div>
@@ -601,7 +705,7 @@ export function WallsBuiltView({ yourSeat }: { yourSeat: WindValue }) {
           <SeatArea wind={topWind} isYou={topWind === yourSeat} count={0} drawing={false} reverse />
         </div>
         <div style={{ gridArea: 'center' }}>
-          <MahjongMat className="p-3">
+          <MahjongMat size={367}>
             <WallsWithBreak
               breakWall={null} breakPos={0} yourSeat={yourSeat}
               tilesDrawn={0} showDealArrow={false} showMarkers={false} nextTileCount={0}
@@ -623,7 +727,7 @@ const PHASE_NOTES: Record<Phase, string> = {
   'await-roll': 'Roll the dice. The sum of all three determines which wall breaks and where the deal begins.',
   'await-deal': '',
   'dealing': 'Deal 4 tiles at a time, clockwise: East → North → West → South. Keep going until everyone has their starting hand.',
-  'dealt': 'All tiles dealt. East holds 14, everyone else 13. Any flower tiles drawn will be swapped for replacements from the back wall.',
+  'dealt': 'All tiles dealt. East holds 14, everyone else 13. F marks where players draw tiles next. B marks where replacement tiles are drawn (for flowers or kongs).',
 };
 
 // CW deal order: East→North→West→South. CW-next from each wall:
@@ -647,7 +751,8 @@ function breakExplanation(sum: number, wall: WindValue, pos: number): string {
 }
 
 export function DealHandsAction({ state, footer, back }: { state: DealHandsState; footer?: React.ReactNode; back?: React.ReactNode }) {
-  const { phase, dice, diceSum, dealStep, breakInfo, roll, startDeal, nextStep } = state;
+  const { phase, dice, diceSum, dealStep, breakInfo, nextTileCount, roll, startDeal, nextStep } = state;
+  const isDealerJump = phase === 'dealing' && nextTileCount === 2;
   return (
     <div className="flex-1 flex flex-col gap-3">
       {phase === 'await-roll' && (
@@ -680,7 +785,7 @@ export function DealHandsAction({ state, footer, back }: { state: DealHandsState
       {phase === 'await-deal' && breakInfo && (
         <div className="rounded-lg border border-brand-green/20 bg-elev px-2.5 py-1.5">
           <div className="text-ui text-tertiary text-[11px]">Break point</div>
-          <div className="text-ui font-medium text-primary text-[12px]">{WIND_LABELS[breakInfo.wall]} wall · {breakInfo.pos} from right</div>
+          <div className="text-ui font-medium text-primary text-[12px]">{WIND_LABELS[breakInfo.wall]} wall · {breakInfo.pos} from east (dealer)</div>
         </div>
       )}
       {phase === 'dealing' && (
@@ -697,7 +802,9 @@ export function DealHandsAction({ state, footer, back }: { state: DealHandsState
         <p className="text-[11px] text-secondary leading-relaxed">
           {phase === 'await-deal' && breakInfo
             ? breakExplanation(diceSum, breakInfo.wall, breakInfo.pos)
-            : PHASE_NOTES[phase]}
+            : isDealerJump
+              ? 'East jumps — takes the 1st tile, skips the 2nd, then takes the 3rd. The skipped tile stays in place for North to draw next.'
+              : PHASE_NOTES[phase]}
         </p>
       </div>
       <div className="flex-1 min-h-0" />

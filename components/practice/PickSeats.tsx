@@ -34,14 +34,13 @@ export function WindTile({ wind, size = 26 }: { wind: WindValue; size?: number }
 function SeatLabel({ wind, you, reverse }: { wind: WindValue; you?: boolean; reverse?: boolean }) {
   const pill = (
     <span
-      style={reverse ? { display: 'inline-block', minWidth: '115px' } : undefined}
+      style={{ display: 'inline-block', minWidth: '115px' }}
       className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-        you ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
+        wind === 'east' ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
       }`}
     >
       <span className="font-medium">Player {PLAYER_NUMS[wind]}</span>
       {' · '}{WIND_LABELS[wind]}
-      {you && ' · you'}
     </span>
   );
 
@@ -68,11 +67,8 @@ function SeatLabel({ wind, you, reverse }: { wind: WindValue; you?: boolean; rev
 
 function GenericLabel({ num, you }: { num: number; you?: boolean }) {
   return (
-    <span className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-      you ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
-    }`}>
+    <span style={{ display: 'inline-block', minWidth: '115px' }} className="text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap border border-brand-green/30 text-secondary">
       <span className="font-medium">Player {num}</span>
-      {you && ' · you'}
     </span>
   );
 }
