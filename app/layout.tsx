@@ -29,7 +29,7 @@ const display = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://faanclub.vercel.app'),
+  metadataBase: new URL('https://faanclub.co'),
   title: {
     default: 'Faan Club',
     template: '%s · Faan Club',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     siteName: 'Faan Club',
     title: 'Faan Club — Learn Hong Kong Mahjong, One Bite at a Time',
     description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
-    url: 'https://faanclub.vercel.app',
+    url: 'https://faanclub.co',
   },
   twitter: {
     card: 'summary_large_image',
@@ -59,7 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <html lang="en" className={`${GeistSans.variable} ${serif.variable} ${mono.variable} ${display.variable}`}>
+    <html lang="en" className={`${GeistSans.variable} ${serif.variable} ${mono.variable} ${display.variable}`} suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>
