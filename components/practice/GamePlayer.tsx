@@ -649,8 +649,8 @@ export function GamePlayer({
         </div>
 
         {/* Sidebar: game log */}
-        <div className="w-full md:w-[180px] shrink-0 md:self-stretch md:relative border-t md:border-t-0 md:border-l border-brand-green/20 pt-4 md:pt-0">
-          <div className="md:absolute md:inset-0 md:pl-5 flex flex-col overflow-hidden">
+        <div className="w-full md:w-[220px] shrink-0 md:self-stretch md:relative border-t md:border-t-0 md:border-l border-brand-green/20 pt-4 md:pt-0">
+          <div className="md:absolute md:inset-0 md:pl-6 flex flex-col overflow-hidden">
             <GameLog steps={steps} currentStep={step} isFirst={isFirst} isLast={isLast} onNext={next} onPrev={prev} onReset={reset} replayLocked={replayLocked} />
           </div>
         </div>
