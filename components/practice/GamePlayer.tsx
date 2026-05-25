@@ -693,9 +693,6 @@ export function GamePlayer({
         </div>
       </div>
 
-      {/* Step info panel */}
-      <StepInfo current={current} step={step} total={total} />
-
       {/* Win popup */}
       {showWinPopup && (
         <WinPopup current={current} onClose={() => setShowWinPopup(false)} />
