@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { t } from './RoundDemo';
 import { SuitFace } from '@/components/tile/TileFaces';
 import { MahjongMat } from './MahjongMat';
+import { SeatChip } from './PickSeats';
+import type { WindValue } from '@/lib/tiles';
 import type { GameStep, GameSeat } from './data/types';
 
 // ─── Tile sort ────────────────────────────────────────────────────────────────
@@ -129,12 +131,10 @@ function FanBadge({ fan }: { fan: number | null }) {
 }
 
 // ─── Player area ──────────────────────────────────────────────────────────────
-const SEAT_LABELS: Record<GameSeat, string> = { East: 'East', South: 'South', West: 'West', North: 'North' };
-const SEAT_NUMS: Record<GameSeat, number> = { East: 1, South: 2, West: 3, North: 4 };
-const PILL_W = 115;
+const SEAT_WIND: Record<GameSeat, WindValue> = { East: 'east', South: 'south', West: 'west', North: 'north' };
 
 function PlayerArea({
-  seat, you, reverse,
+  seat, you, reverse, num,
   hand, exposed, bonusTiles,
   fan, isActive, isWarning,
   drawnTile, discardedTile,
@@ -142,6 +142,7 @@ function PlayerArea({
   seat: GameSeat;
   you?: boolean;
   reverse?: boolean;
+  num: number;
   hand: string[];
   exposed: string[][];
   bonusTiles: string[];
@@ -151,32 +152,22 @@ function PlayerArea({
   drawnTile?: string | null;
   discardedTile?: string | null;
 }) {
-  const pillGlow: React.CSSProperties = isActive
-    ? { boxShadow: '0 0 10px rgba(245,158,11,0.8), 0 0 4px rgba(245,158,11,0.5)' }
+  const chipFilter: React.CSSProperties = isActive
+    ? { filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.8))' }
     : isWarning
-    ? { boxShadow: '0 0 10px rgba(245,158,11,0.6)' }
+    ? { filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.6))' }
     : {};
 
-  const pill = (
-    <span
-      style={{ ...pillGlow, minWidth: PILL_W, display: 'inline-block' }}
-      className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-        you ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
-      } ${isActive ? 'ring-1 ring-amber-400/80' : ''} ${isWarning ? 'ring-2 ring-amber-400' : ''}`}
-    >
-      <span className="font-medium">P{SEAT_NUMS[seat]}</span>
-      {' · '}{SEAT_LABELS[seat]}
-      {seat === 'East' && <span className="ml-1 text-[9px] text-brand-green/70">dealer</span>}
-    </span>
+  const chipEl = (
+    <div style={chipFilter}>
+      <SeatChip wind={SEAT_WIND[seat]} isYou={you ?? false} num={num} />
+    </div>
   );
 
   const fanBadge = <FanBadge fan={fan} />;
 
-  const bonusOverhang = bonusTiles.length > 0 ? (
-    <div className="flex gap-px items-center" style={{
-      position: 'absolute', right: '100%', top: '50%',
-      transform: 'translateY(-50%)', paddingRight: 4,
-    }}>
+  const flowerTiles = bonusTiles.length > 0 ? (
+    <div className="flex gap-px items-center">
       {bonusTiles.map((ts, i) => (
         <div key={i} style={{ filter: 'drop-shadow(0 0 2px rgba(200,168,107,0.8))' }}>
           <MeldTile tileStr={ts} />
@@ -185,31 +176,22 @@ function PlayerArea({
     </div>
   ) : null;
 
-  const pillWithBonus = (
-    <div style={{ position: 'relative' }}>
-      {bonusOverhang}
-      {pill}
-    </div>
-  );
-
   const pillRow = reverse ? (
-    <div className="flex items-center gap-1 justify-end">
+    <div className="flex items-center gap-1.5 justify-end">
       {fanBadge}
-      {you && <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-green bg-brand-green/15 px-1.5 rounded">you</span>}
-      {pillWithBonus}
+      {flowerTiles}
+      {chipEl}
     </div>
   ) : (
-    <div className="flex items-center gap-1">
-      {pillWithBonus}
-      {you && <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-green bg-brand-green/15 px-1.5 rounded">you</span>}
+    <div className="flex items-center gap-1.5">
+      {flowerTiles}
+      {chipEl}
       {fanBadge}
     </div>
   );
 
-  const warningBadge = null;
-
   const handRow = (
-    <div style={{ width: PILL_W, overflow: 'visible', display: 'flex', justifyContent: reverse ? 'flex-end' : 'flex-start' }}>
+    <div style={{ overflow: 'visible', display: 'flex', justifyContent: reverse ? 'flex-end' : 'flex-start' }}>
       <div className="flex gap-px items-end py-0.5 flex-nowrap">
         {hand.map((ts, i) => {
           const isDrawn     = drawnTile != null && i === hand.length - 1 && ts === drawnTile;
@@ -234,7 +216,7 @@ function PlayerArea({
   const meldRow = exposed.length > 0 ? (
     <div style={{ height: 0, overflow: 'visible', alignSelf: reverse ? 'flex-end' : 'flex-start' }}>
       <div style={{ paddingTop: 5 }}>
-        <div style={{ width: PILL_W, overflow: 'visible', display: 'flex', justifyContent: 'flex-start' }}>
+        <div style={{ overflow: 'visible', display: 'flex', justifyContent: 'flex-start' }}>
           <div className="flex gap-1 items-center py-0.5">
             {exposed.map((meld, mi) => (
               <div key={mi} className="flex gap-px">
@@ -250,7 +232,6 @@ function PlayerArea({
   return (
     <div className={`flex flex-col ${reverse ? 'items-end' : 'items-start'}`}>
       <div style={{ marginBottom: 4 }}>{pillRow}</div>
-      {warningBadge && <div style={{ marginBottom: 4 }}>{warningBadge}</div>}
       {handRow}
       {meldRow}
     </div>
@@ -568,7 +549,7 @@ export function GamePlayer({
   const topSeat    = SEATS[(yourIdx + 2) % 4];
   const leftSeat   = SEATS[(yourIdx + 3) % 4];
 
-  function playerAreaProps(seat: GameSeat, you?: boolean, reverse?: boolean) {
+  function playerAreaProps(seat: GameSeat, num: number, you?: boolean, reverse?: boolean) {
     const isActive = who === seat;
     const isWarning = current.warning && who === seat;
     const drawnTile = (action === 'draw-discard' && isActive && current.drew) ? current.drew : null;
@@ -577,7 +558,7 @@ export function GamePlayer({
                            && hands[seat]?.includes(current.discarded))
                           ? current.discarded : null;
     return {
-      seat, you, reverse,
+      seat, you, reverse, num,
       hand: sortHandForDisplay(hands[seat], drawnTile),
       exposed: exposed[seat],
       bonusTiles: [
@@ -610,12 +591,12 @@ export function GamePlayer({
               gridTemplateRows: '120px max-content 120px',
             }}>
               {/* Left player */}
-              <div style={{ gridArea: 'tl', marginLeft: '-170px', transform: 'translateY(14px)' }} className="flex flex-col items-start justify-end">
-                <PlayerArea {...playerAreaProps(leftSeat, false, false)} />
+              <div style={{ gridArea: 'tl', marginLeft: '-180px', transform: 'translateY(14px)' }} className="flex flex-col items-start justify-end">
+                <PlayerArea {...playerAreaProps(leftSeat, 4, false, false)} />
               </div>
               {/* Top player */}
-              <div style={{ gridArea: 'tr', marginRight: '-170px', transform: 'translateY(14px)' }} className="flex flex-col items-end justify-end">
-                <PlayerArea {...playerAreaProps(topSeat, false, true)} />
+              <div style={{ gridArea: 'tr', marginRight: '-180px', transform: 'translateY(14px)' }} className="flex flex-col items-end justify-end">
+                <PlayerArea {...playerAreaProps(topSeat, 3, false, true)} />
               </div>
 
               {/* Center mat with discard piles */}
@@ -656,12 +637,12 @@ export function GamePlayer({
               </div>
 
               {/* Bottom player (you) */}
-              <div style={{ gridArea: 'bl', marginLeft: '-170px', transform: 'translateY(-14px)' }} className="flex flex-col items-start justify-start">
-                <PlayerArea {...playerAreaProps(bottomSeat, true, false)} />
+              <div style={{ gridArea: 'bl', marginLeft: '-180px', transform: 'translateY(-14px)' }} className="flex flex-col items-start justify-start">
+                <PlayerArea {...playerAreaProps(bottomSeat, 1, true, false)} />
               </div>
               {/* Right player */}
-              <div style={{ gridArea: 'br', marginRight: '-170px', transform: 'translateY(-14px)' }} className="flex flex-col items-end justify-start">
-                <PlayerArea {...playerAreaProps(rightSeat, false, true)} />
+              <div style={{ gridArea: 'br', marginRight: '-180px', transform: 'translateY(-14px)' }} className="flex flex-col items-end justify-start">
+                <PlayerArea {...playerAreaProps(rightSeat, 2, false, true)} />
               </div>
             </div>
           </div>
