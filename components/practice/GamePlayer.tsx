@@ -415,9 +415,31 @@ function GameLog({ steps, currentStep, isFirst, isLast, onNext, onPrev, onReset,
             {current.headline}
           </div>
           {current.comment && (
-            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 13, lineHeight: 1.6, color: '#44463a', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 13, lineHeight: 1.6, color: '#44463a', margin: 0, marginBottom: current.discardReason ? 6 : 0 }}>
               {current.comment}
             </p>
+          )}
+          {current.discardReason && (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+              <span style={{ color: '#9d9d8a', fontSize: 10, paddingTop: 3, flexShrink: 0 }}>→</span>
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: 12, lineHeight: 1.6, color: '#7a7a6a', margin: 0 }}>
+                {current.discardReason}
+              </p>
+            </div>
+          )}
+          {current.action === 'win' && current.breakdown && (
+            <div style={{ marginTop: 10, borderTop: '1px solid rgba(28,74,42,0.12)', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {current.breakdown.map((item, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                  <span style={{ fontFamily: 'var(--font-serif)', color: '#7a7a6a' }}>{item.item}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', color: '#1c4a2a', fontWeight: 600 }}>+{item.fan}</span>
+                </div>
+              ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, borderTop: '1px solid rgba(28,74,42,0.12)', paddingTop: 6, marginTop: 2 }}>
+                <span style={{ fontFamily: 'var(--font-serif)', color: '#16170f' }}>Total</span>
+                <span style={{ fontFamily: 'var(--font-mono)', color: '#1c4a2a' }}>{current.total} fan</span>
+              </div>
+            </div>
           )}
         </div>
       )}
