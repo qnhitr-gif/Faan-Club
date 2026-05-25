@@ -635,7 +635,7 @@ export function GamePlayer({
   return (
     <div className="flex flex-col gap-4">
       {/* Table + sidebar */}
-      <div className="rounded-lg bg-elev hairline-strong border px-6 pt-10 pb-6 flex flex-col md:flex-row gap-6 items-start" style={{ overflow: 'visible' }}>
+      <div className="rounded-lg bg-elev hairline-strong border px-6 pt-5 pb-6 flex flex-col md:flex-row gap-6 items-start" style={{ overflow: 'visible' }}>
         {/* Table */}
         <div className="flex-1 min-w-0 w-full md:w-auto" style={{ overflow: 'visible' }}>
           {/* Eyebrow */}
