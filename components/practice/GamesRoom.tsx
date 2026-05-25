@@ -170,8 +170,8 @@ export function GamesRoom({ userId }: { userId?: string | null }) {
         {/* Pill nav — top right */}
         <div className="flex gap-1.5 flex-wrap justify-end items-center shrink-0 mt-1">
 
-          {/* Set up pill — expands inline only when explicitly opened */}
-          {setupOpen ? (
+          {/* Set up pill — expands inline only when explicitly opened (and only on setup tab) */}
+          {setupOpen && mode === 'setup' ? (
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -320,7 +320,7 @@ export function GamesRoom({ userId }: { userId?: string | null }) {
       {mode === 'setup' && (
         <SetupStepper
           key={setupKey}
-          onComplete={() => setMode('0pt')}
+          onComplete={() => { setMode('0pt'); setSetupOpen(false); }}
           onStepChange={(_step, index) => setStepIndex(index)}
         />
       )}
