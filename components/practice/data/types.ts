@@ -12,6 +12,7 @@ export interface GameStep {
   bonusDrawn?: string | null;
   claimed: { from: GameSeat; tile: string; meld: string[] } | null;
   discardReason: string | null;
+  strategy?: string | null;
   warning: boolean;
   headline: string;
   comment: string;

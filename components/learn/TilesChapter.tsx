@@ -179,7 +179,7 @@ export function TilesChapter() {
       </div>
       <h1 style={{
         fontFamily: 'var(--font-display)',
-        fontSize: 'clamp(44px, 6.5vw, 96px)',
+        fontSize: 'clamp(32px, 4.5vw, 68px)',
         fontWeight: 600, lineHeight: 1.0,
         letterSpacing: '-0.02em', color: '#16170f',
         marginBottom: 32,

@@ -8,12 +8,14 @@ import type { WindValue } from '@/lib/tiles';
 const COUNT = 36;
 
 function makeScatter(seed: number) {
-  // Simple deterministic-ish scatter from seed.
   const rng = mulberry32(seed);
-  return Array.from({ length: COUNT }, () => ({
-    x: rng() * 100,
-    y: rng() * 100,
-    rot: -25 + rng() * 50,
+  return Array.from({ length: COUNT }, (_, i) => ({
+    // Bias toward center with some spread — mix of uniform and normal-ish
+    x: 5 + rng() * 90 + (rng() - 0.5) * 20,
+    y: 5 + rng() * 90 + (rng() - 0.5) * 20,
+    rot: -75 + rng() * 150,
+    scale: 0.82 + rng() * 0.36,
+    z: i,
   }));
 }
 
@@ -49,7 +51,8 @@ export function ShuffleTiles({ yourSeat }: { yourSeat: WindValue }) {
                 style={{
                   left: `${p.x}%`,
                   top: `${p.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${p.rot}deg)`,
+                  zIndex: p.z,
+                  transform: `translate(-50%, -50%) rotate(${p.rot}deg) scale(${p.scale})`,
                 }}
               >
                 <Tile size="sm" />

@@ -12,7 +12,7 @@ import {
   SafeSequences, DangerScale, Checklist, WaitPattern, QuickRef, FiveBlockDiagram,
 } from '@/components/learn/StrategyParts';
 import {
-  ScoringSection,
+  ScoringSection, ScoringHeader,
   PatternGrid, PatternCard,
   RareHandGrid, RareHandCard,
   HonorGrid, HonorCard,
@@ -26,12 +26,15 @@ import { TileEfficiencyChapter } from '@/components/learn/TileEfficiencyChapter'
 import { InGameStrategyChapter } from '@/components/learn/InGameStrategyChapter';
 import { ReadingTheTableChapter } from '@/components/learn/ReadingTheTableChapter';
 import { HandSelectionChapter } from '@/components/learn/HandSelectionChapter';
+import { WinningVsHoldingChapter } from '@/components/learn/WinningVsHoldingChapter';
+import { DefensivePlayChapter } from '@/components/learn/DefensivePlayChapter';
 import { WelcomeChapter } from '@/components/learn/WelcomeChapter';
-import { WinningHand, MeldGrid, MeldCard } from '@/components/learn/HandParts';
+import { WinningHand, MeldGrid, MeldCard, HandFormula, ClaimRules, CallPriority, WallBreakdown } from '@/components/learn/HandParts';
 import { TilesChapter } from '@/components/learn/TilesChapter';
 import { HowARoundFlows } from '@/components/learn/HowARoundFlows';
 import { ChapterHeader } from '@/components/learn/ChapterHeader';
 import { TurnLoop } from '@/components/learn/TurnLoop';
+import { HandReading } from '@/components/learn/HandReading';
 
 const mdxComponents = {
   Tile,
@@ -50,10 +53,11 @@ const mdxComponents = {
   WelcomeChapter,
   HowARoundFlows,
   TurnLoop,
+  HandReading,
   TwoCol: ({ children }: { children: React.ReactNode }) => (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, margin: '24px 0' }}>{children}</div>
   ),
-  WinningHand, MeldGrid, MeldCard,
+  WinningHand, MeldGrid, MeldCard, HandFormula, ClaimRules, CallPriority, WallBreakdown,
   ChapterHeader,
   CallCosts,
   TenpaiOutsChapter,
@@ -61,7 +65,9 @@ const mdxComponents = {
   InGameStrategyChapter,
   ReadingTheTableChapter,
   HandSelectionChapter,
-  ScoringSection,
+  WinningVsHoldingChapter,
+  DefensivePlayChapter,
+  ScoringSection, ScoringHeader,
   h1: (props: any) => (
     <h1 {...props} className="font-serif text-h1 font-medium mt-2 mb-6 tracking-tight" />
   ),
@@ -88,6 +94,32 @@ const mdxComponents = {
 
 export function generateStaticParams() {
   return listChapters().map((c) => ({ slug: c.slug }));
+}
+
+const SEO_TITLES: Record<string, string> = {
+  'welcome':            'Introduction to Hong Kong Mahjong | Faan Club',
+  'tiles':              'Mahjong Tiles Explained — Suits, Winds & Dragons | Faan Club',
+  'how-a-round-flows':  'How a Round of Mahjong Works — Calls & Wall | Faan Club',
+  'hand':               'Mahjong Winning Hand — Melds, Pairs & Calls | Faan Club',
+  'common-hands':       'Mahjong Scoring Basics — Faan & the 3-Point Minimum | Faan Club',
+  'hand-selection':     'Mahjong Hand Selection — What to Build | Faan Club',
+  'tenpai-outs':        'Mahjong Tenpai & Outs — How Close Are You? | Faan Club',
+  'tile-efficiency':    'Mahjong Tile Efficiency — What to Discard | Faan Club',
+  'call-strategy':      'Open vs Concealed Hand in Mahjong | Faan Club',
+  'reading-the-table':  'Reading Mahjong Discards — The Discard River | Faan Club',
+  'discard-reading':    'Reading Opponents in Mahjong | Faan Club',
+  'defensive-play':     'When to Fold in Mahjong — Defensive Play | Faan Club',
+  'winning-vs-holding': 'Take the Win or Hold? Mahjong Strategy | Faan Club',
+  'table-dynamics':     'Mahjong Table Dynamics — Reading the Room | Faan Club',
+};
+
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const chapter = getChapter(params.slug);
+  if (!chapter) return {};
+  return {
+    title: SEO_TITLES[params.slug] ?? `Ch. ${chapter.number}: ${chapter.title} | Faan Club`,
+    description: chapter.description,
+  };
 }
 
 export default function ChapterPage({ params }: { params: { slug: string } }) {

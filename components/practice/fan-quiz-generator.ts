@@ -48,6 +48,25 @@ function suitedTile(suit: Suit3, v: number): TileFace {
 function windTile(w: WindValue): TileFace { return { suit: 'wind', value: w }; }
 function dragonTile(d: DragonValue): TileFace { return { suit: 'dragon', value: d }; }
 
+/* ─── Tile counting helpers ──────────────────────────────────────────────── */
+
+function tileKey(t: TileFace): string {
+  return `${t.suit}-${t.value}`;
+}
+
+/** Returns true if no tile appears more than 4 times across all melds. */
+function blueprintIsValid(melds: Meld[]): boolean {
+  const counts = new Map<string, number>();
+  for (const meld of melds) {
+    for (const tile of meld.tiles) {
+      const key = tileKey(tile);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+      if ((counts.get(key) ?? 0) > 4) return false;
+    }
+  }
+  return true;
+}
+
 /* ─── Meld builders ─────────────────────────────────────────────────────── */
 
 interface Meld { tiles: TileFace[]; type: 'chow' | 'pung' | 'pair'; }
@@ -220,7 +239,7 @@ function buildHalfFlush(seatWind: WindValue, roundWind: WindValue): HandBlueprin
     windPungs.push(w);
     melds.push(makePung(windTile(w)));
   }
-  // else: no honors (15%) — pure half flush from suit uniformity
+  // else: no honors (15%) — all one suit, no honors → this is a full flush, not half flush
 
   // Fill rest with chows/pungs of the chosen suit
   while (melds.length < 4) {
@@ -228,10 +247,12 @@ function buildHalfFlush(seatWind: WindValue, roundWind: WindValue): HandBlueprin
   }
   melds.push(randomNonValuePair(suit));
 
-  return { melds, handType: 'halfFlush', dragonPungs, windPungs, hasDragonPair: null, hasWindPair: null };
+  // Only a true half flush if honor tiles are actually present
+  const hasHonors = dragonPungs.length > 0 || windPungs.length > 0;
+  return { melds, handType: hasHonors ? 'halfFlush' : 'fullFlush', dragonPungs, windPungs, hasDragonPair: null, hasWindPair: null };
 }
 
-/* Full Flush: all one suit */
+/* Full Flush (chow): all one suit, all sequences */
 function buildFullFlush(): HandBlueprint {
   const suit = pick(SUIT3);
   const melds: Meld[] = [
@@ -239,6 +260,19 @@ function buildFullFlush(): HandBlueprint {
     randomChow(suit),
     randomChow(suit),
     randomChow(suit),
+    randomNonValuePair(suit),
+  ];
+  return { melds, handType: 'fullFlush', dragonPungs: [], windPungs: [], hasDragonPair: null, hasWindPair: null };
+}
+
+/* Full Flush (pung): all one suit, all triplets — scores Full Flush (7) + All Pungs (3) = 10 */
+function buildFullFlushPungs(): HandBlueprint {
+  const suit = pick(SUIT3);
+  const melds: Meld[] = [
+    randomSuitedPung(suit),
+    randomSuitedPung(suit),
+    randomSuitedPung(suit),
+    randomSuitedPung(suit),
     randomNonValuePair(suit),
   ];
   return { melds, handType: 'fullFlush', dragonPungs: [], windPungs: [], hasDragonPair: null, hasWindPair: null };
@@ -312,9 +346,18 @@ function scoreFan(input: ScoreInput): ScoreResult {
 
   const { handType, dragonPungs, windPungs } = blueprint;
 
+  const nonPairMelds = blueprint.melds.filter(m => m.type !== 'pair');
+  // True when every non-pair meld is a chow (sequences only)
+  const allChows = nonPairMelds.every(m => m.type === 'chow');
+  // True when every non-pair meld is a pung/kong (triplets only)
+  const allPungMelds = nonPairMelds.every(m => m.type === 'pung');
+
   /* ── Base hand pattern ── */
   if (handType === 'fullFlush') {
     add('Full Flush (清一色)', 7, 'hand');
+    // All-chow pure-suit hand earns Ping Hu on top; all-pung earns All Pungs on top
+    if (allChows) add('All Chows / Ping Hu (平胡)', 1, 'hand');
+    else if (allPungMelds) add('All Pungs (碰碰胡)', 3, 'hand');
   } else if (handType === 'halfFlush') {
     add('Half Flush (混一色)', 3, 'hand');
   } else if (handType === 'allSelfTriplets') {
@@ -343,13 +386,12 @@ function scoreFan(input: ScoreInput): ScoreResult {
 
   /* ── Concealed bonus ── */
   if (handType === 'allSelfTriplets') {
+    // 全刻手 already encodes concealed + self-draw — no separate bonus
     add('Concealed + self-draw (included in 全刻手)', 0, 'condition');
-  } else if (concealed) {
-    if (winMethod === 'selfDraw' || winMethod === 'lastWall') {
-      add('Concealed', 1, 'condition');
-    } else if (winMethod === 'discard') {
-      add('Concealed', 1, 'condition');
-    }
+  } else if (concealed && handType !== 'allPungs') {
+    // All Pungs (碰碰胡) is an open-meld pattern — a concealed version is
+    // All Self Triplets (全刻手), not All Pungs + Concealed.
+    add('Concealed', 1, 'condition');
   }
 
   /* ── Self-draw ── */
@@ -456,26 +498,27 @@ export function generateFanQuestion(excludeHandType?: HandType): GeneratedFanQue
     const templateRoll = Math.random();
     let blueprint: HandBlueprint;
     if (!concealed) {
-      // Open hands: allPungs 18% | halfFlush 35% | fullFlush 30% | pinghu 12% | mixedHand 5%
-      if (templateRoll < 0.18) {
+      // Open hands: allPungs 15% | halfFlush 33% | fullFlush(chow) 22% | fullFlush(pung) 13% | pinghu 12% | mixedHand 5%
+      if (templateRoll < 0.15) {
         blueprint = buildAllPungs(seatWind, roundWind);
-      } else if (templateRoll < 0.53) {
+      } else if (templateRoll < 0.48) {
         blueprint = buildHalfFlush(seatWind, roundWind);
-      } else if (templateRoll < 0.83) {
+      } else if (templateRoll < 0.70) {
         blueprint = buildFullFlush();
+      } else if (templateRoll < 0.83) {
+        blueprint = buildFullFlushPungs();
       } else if (templateRoll < 0.95) {
         blueprint = buildPingHu();
       } else {
         blueprint = buildMixedHand(seatWind, roundWind);
       }
     } else {
-      // Concealed: allSelfTriplets 5% | pinghu 30% | allPungs 10% | halfFlush 20% | fullFlush 18% | mixed 17%
-      if (templateRoll < 0.05) {
+      // Concealed: allSelfTriplets 15% | pinghu 30% | halfFlush 20% | fullFlush 18% | mixed 17%
+      // (No allPungs for concealed — a concealed all-pung hand is always allSelfTriplets)
+      if (templateRoll < 0.15) {
         blueprint = buildAllSelfTriplets(seatWind, roundWind);
-      } else if (templateRoll < 0.35) {
-        blueprint = buildPingHu();
       } else if (templateRoll < 0.45) {
-        blueprint = buildAllPungs(seatWind, roundWind);
+        blueprint = buildPingHu();
       } else if (templateRoll < 0.65) {
         blueprint = buildHalfFlush(seatWind, roundWind);
       } else if (templateRoll < 0.83) {
@@ -484,6 +527,9 @@ export function generateFanQuestion(excludeHandType?: HandType): GeneratedFanQue
         blueprint = buildMixedHand(seatWind, roundWind);
       }
     }
+
+    // Reject any blueprint where a tile appears more than 4 times (impossible hand)
+    if (!blueprintIsValid(blueprint.melds)) continue;
 
     // All Self Triplets must be won by self-draw — the concealed pungs are built up in hand
     const effectiveWinMethod: WinMethod = blueprint.handType === 'allSelfTriplets' ? 'selfDraw' : winMethod;

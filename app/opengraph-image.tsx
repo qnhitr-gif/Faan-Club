@@ -45,7 +45,7 @@ export default function OgImage() {
             fontSize: 15, letterSpacing: '0.22em', textTransform: 'uppercase',
             color: 'rgba(250,246,236,0.55)', fontFamily: 'monospace',
           }}>
-            Hong Kong Rules · faanclub.vercel.app
+            Hong Kong Rules · faanclub.co
           </div>
         </div>
 

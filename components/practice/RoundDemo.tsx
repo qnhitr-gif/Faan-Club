@@ -6,12 +6,12 @@ import type { TileFace, WindValue } from '@/lib/tiles';
 import { SuitFace } from '@/components/tile/TileFaces';
 import { WallsWithBreak } from './DealHands';
 import { MahjongMat } from './MahjongMat';
+import { SeatChip } from './PickSeats';
 
 const OFF = 18;
 const WALL_PX = 305;
 const WIND_LABELS: Record<WindValue, string> = { east: 'East', south: 'South', west: 'West', north: 'North' };
 const WIND_SHORT: Record<WindValue, string> = { east: 'E', south: 'S', west: 'W', north: 'N' };
-const PLAYER_NUMS: Record<WindValue, number> = { east: 1, south: 2, west: 3, north: 4 };
 const CCW: WindValue[] = ['east', 'south', 'west', 'north'];
 const FIXED_BREAK = { wall: 'east' as WindValue, pos: 7 };
 
@@ -454,12 +454,15 @@ const ACTION_DOT: Record<EventAction, string> = {
   win:         'bg-brand-green',
 };
 
+const CN_WIND_LOG: Record<WindValue, string> = { east: '東', south: '南', west: '西', north: '北' };
+
 export function GameLog({ state, footer, onRestart, back }: { state: RoundDemoState; footer?: React.ReactNode; onRestart?: () => void; back?: React.ReactNode }) {
-  const entries = state.script.slice(0, state.step + 1);
-  const { current, isComplete, next, replay } = state;
+  const { current, isComplete, next, replay, step, total, script } = state;
 
   const [restartLocked, setRestartLocked] = useState(false);
   const wasComplete = useRef(false);
+  const listEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (isComplete && !wasComplete.current) {
       wasComplete.current = true;
@@ -470,54 +473,93 @@ export function GameLog({ state, footer, onRestart, back }: { state: RoundDemoSt
     if (!isComplete) wasComplete.current = false;
   }, [isComplete]);
 
+  // Scroll to bottom whenever a new step is revealed
+  useEffect(() => {
+    listEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [step]);
+
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      {/* top half — scrollable log */}
-      <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex items-center justify-between mb-1.5">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-tertiary">Game log</div>
-          {back}
-        </div>
-        <div className="flex-1 overflow-y-auto min-h-0 flex flex-col-reverse gap-0.5">
-          {[...entries].reverse().map((entry, i) => {
-            const isCurrent = i === 0;
-            const stepNum = entries.length - 1 - i;
-            return (
-              <div key={stepNum}
-                className={`px-2 py-1.5 rounded text-[11px] leading-snug ${isCurrent ? 'bg-brand-green/10' : ''}`}>
-                <span className={isCurrent ? 'text-primary' : 'text-secondary'}>
-                  <span className="font-medium text-tertiary">Step {stepNum}</span>
-                  {' '}<span className="font-medium">{WIND_SHORT[entry.player]}</span>
-                  {' '}{entry.label.replace(/^(East|South|West|North)\s+/, '')}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+
+      {/* Header: Game log + step counter */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9d9d8a' }}>Game log</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9d9d8a' }}>
+          Step {String(step).padStart(2, '0')} / {String(total - 1).padStart(2, '0')}
+        </span>
       </div>
 
-      <div className="border-t border-brand-green/20 my-3 shrink-0" />
+      {/* Progress bar */}
+      <div style={{ height: 2, background: 'rgba(28,74,42,0.1)', borderRadius: 1, marginBottom: 14, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${(step / Math.max(total - 1, 1)) * 100}%`, background: '#1c4a2a', borderRadius: 1, transition: 'width 0.3s ease' }} />
+      </div>
 
-      {/* bottom half — explanation */}
-      <div className="flex flex-col flex-1 min-h-0">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-tertiary mb-1.5">Explanation</div>
-        <div className="flex-1 overflow-y-auto min-h-0">
-          {current.note
-            ? <p className="text-[11px] text-secondary leading-relaxed">{current.note}</p>
-            : <p className="text-[11px] text-tertiary italic">—</p>
+      {/* Current step card */}
+      <div style={{ background: 'rgba(28,74,42,0.06)', borderRadius: 10, padding: '12px 14px', marginBottom: 14, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 7px', borderRadius: 4, background: '#1c4a2a', color: '#faf6ec' }}>
+            {WIND_LABELS[current.player]}
+          </span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9d9d8a' }}>
+            Step {String(step).padStart(2, '0')}
+          </span>
+        </div>
+        <div style={{ fontFamily: 'var(--font-serif)', fontSize: 17, fontWeight: 600, lineHeight: 1.25, color: '#16170f', marginBottom: current.note ? 8 : 0 }}>
+          {current.label}
+        </div>
+        {current.note && (
+          <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 13, lineHeight: 1.6, color: '#44463a', margin: 0 }}>
+            {current.note}
+          </p>
+        )}
+      </div>
+
+      {/* Steps label */}
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9d9d8a', marginBottom: 6, flexShrink: 0 }}>
+        Steps
+      </div>
+
+      {/* Scrollable steps list — past steps only; current step lives in the card above */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <style>{`
+          @keyframes logFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
           }
-        </div>
+        `}</style>
+        {script.slice(0, step).map((entry, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+            padding: '7px 0',
+            borderBottom: i < step - 1 ? '1px dashed rgba(28,74,42,0.13)' : 'none',
+            animation: i === step - 1 ? 'logFadeIn 0.25s ease' : 'none',
+          }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#b0b09a', minWidth: 18, paddingTop: 2, flexShrink: 0 }}>
+              {String(i).padStart(2, '0')}
+            </span>
+            <span style={{ fontFamily: "'Noto Serif SC', 'Noto Serif CJK SC', serif", fontSize: 13, fontWeight: 700, color: '#b0b09a', minWidth: 18, lineHeight: 1, paddingTop: 2, flexShrink: 0 }}>
+              {CN_WIND_LOG[entry.player]}
+            </span>
+            <span style={{ fontFamily: 'var(--font-serif)', fontSize: 12, color: '#7a7a6a', lineHeight: 1.5 }}>
+              {entry.label}
+            </span>
+          </div>
+        ))}
+        <div ref={listEndRef} />
       </div>
 
-      {/* bottom actions */}
-      <div className="shrink-0 pt-3 mt-3 border-t border-brand-green/20">
+      {/* Bottom actions */}
+      <div className="shrink-0 pt-3 mt-3 border-t border-brand-green/20 flex flex-col gap-2">
         {!isComplete ? (
           <PrimaryButton onClick={next}>Continue</PrimaryButton>
         ) : (
-          <button type="button" onClick={onRestart ?? replay} disabled={restartLocked}
-            className="w-full px-3 py-1.5 rounded-md border border-brand-green/40 text-brand-green text-ui font-medium hover:bg-brand-green/10 text-center disabled:opacity-40 disabled:cursor-not-allowed">
-            Restart tutorial
-          </button>
+          <>
+            {footer}
+            <button type="button" onClick={onRestart ?? replay} disabled={restartLocked}
+              className="w-full px-3 py-1.5 rounded-md border border-brand-green/40 text-brand-green text-ui font-medium hover:bg-brand-green/10 text-center disabled:opacity-40 disabled:cursor-not-allowed">
+              Restart tutorial
+            </button>
+          </>
         )}
       </div>
     </div>
@@ -525,13 +567,10 @@ export function GameLog({ state, footer, onRestart, back }: { state: RoundDemoSt
 }
 
 // ─── Player area ──────────────────────────────────────────────────────────────
-const BADGE_CLS = 'text-[10px] font-semibold uppercase tracking-wider text-brand-green bg-brand-green/15 px-1.5 rounded whitespace-nowrap';
-const PILL_W = 115;
-
-function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnIdx, winGroups, topRow }: {
+function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnIdx, winGroups, num }: {
   wind: WindValue; you?: boolean; reverse?: boolean;
   hand: TileFace[]; melds: TileFace[][]; flowers: TileFace[];
-  isActive?: boolean; drawnIdx?: number; winGroups?: TileFace[][]; topRow?: boolean;
+  isActive?: boolean; drawnIdx?: number; winGroups?: TileFace[][]; num?: number;
 }) {
   const [meldFlash, setMeldFlash] = useState(false);
   const prevMeldsLen = useRef(0);
@@ -545,74 +584,42 @@ function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnI
     prevMeldsLen.current = melds.length;
   }, [melds.length]);
 
-  const pillGlow: React.CSSProperties = isActive
-    ? { boxShadow: '0 0 10px rgba(245,158,11,0.8), 0 0 4px rgba(245,158,11,0.5)' }
-    : {};
-
-  const badges = (
-    <>
-      {wind === 'east' && <span className={BADGE_CLS}>dealer</span>}
-    </>
-  );
-
-  const pill = (
-    <span
-      style={{ ...pillGlow, minWidth: PILL_W, display: 'inline-block' }}
-      className={`text-ui px-2 py-0.5 rounded-md leading-tight whitespace-nowrap ${
-        wind === 'east' ? 'bg-brand-green text-brand-cream' : 'border border-brand-green/30 text-secondary'
-      } ${isActive ? 'ring-1 ring-amber-400/80' : ''}`}
-    >
-      <span className="font-medium">Player {PLAYER_NUMS[wind]}</span>
-      {' · '}{WIND_LABELS[wind]}
-    </span>
-  );
-
   const flowerTiles = flowers.length > 0 ? (
-    <div className="flex gap-1">
+    <div className="flex gap-1 mt-1">
       {flowers.map((f, i) => <SmallTile key={i} face={f} flower />)}
     </div>
   ) : null;
 
-  function centeredRow(children: React.ReactNode) {
+  const chipEl = (
+    <div style={isActive ? { filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.8))' } : undefined}>
+      <SeatChip wind={wind} isYou={you ?? false} num={num} />
+    </div>
+  );
+
+  const pillRow = (
+    <div className="flex items-center gap-1.5">
+      {flowerTiles}
+      {chipEl}
+    </div>
+  );
+
+  function handRowEl() {
     return (
-      <div style={{ width: PILL_W, overflow: 'visible', display: 'flex', justifyContent: 'center' }}>
-        {children}
+      <div style={{ overflow: 'visible', display: 'flex', justifyContent: reverse ? 'flex-end' : 'flex-start' }}>
+        <div className="flex gap-px items-end py-0.5">
+          {hand.map((face, i) => {
+            const floating = drawnIdx !== undefined && drawnIdx >= 0 && i === drawnIdx;
+            return floating ? (
+              <div key={i} style={{ marginLeft: 6, flexShrink: 0, transform: 'translateY(-5px)', filter: 'drop-shadow(0 4px 8px rgba(245,158,11,0.7))' }}>
+                <HandTile face={face} />
+              </div>
+            ) : <HandTile key={i} face={face} />;
+          })}
+        </div>
       </div>
     );
   }
 
-  const pillRow = reverse ? (
-    <div className="relative w-fit">
-      <div className="absolute right-full inset-y-0 flex items-center gap-1 pr-1.5">
-        {flowerTiles}
-      </div>
-      <div className="absolute left-full inset-y-0 flex items-center gap-1 pl-1.5">
-        {badges}
-      </div>
-      {pill}
-    </div>
-  ) : (
-    <div className="flex items-center gap-1">
-      {flowerTiles}
-      {pill}
-      {badges}
-    </div>
-  );
-
-  const handRow = centeredRow(
-    <div className="flex gap-px items-end py-0.5">
-      {hand.map((face, i) => {
-        const floating = drawnIdx !== undefined && drawnIdx >= 0 && i === drawnIdx;
-        return floating ? (
-          <div key={i} style={{ marginLeft: 6, flexShrink: 0, transform: 'translateY(-5px)', filter: 'drop-shadow(0 4px 8px rgba(245,158,11,0.7))' }}>
-            <HandTile face={face} />
-          </div>
-        ) : <HandTile key={i} face={face} />;
-      })}
-    </div>
-  );
-
-  // Meld row: zero height so it doesn't push hand or pill position
   const meldRow = melds.length > 0 ? (
     <div style={{ height: 0, overflow: 'visible', alignSelf: reverse ? 'flex-end' : 'flex-start' }}>
       <div style={{ paddingTop: 5 }}>
@@ -623,7 +630,7 @@ function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnI
             100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
           }
         `}</style>
-        <div style={{ width: PILL_W, overflow: 'visible', display: 'flex', justifyContent: 'flex-start' }}>
+        <div style={{ overflow: 'visible', display: 'flex', justifyContent: 'flex-start' }}>
           <div
             className="flex gap-1 items-center py-0.5"
             style={{ animation: meldFlash ? 'meldPong 2s ease-out forwards' : 'none', borderRadius: 4 }}
@@ -651,8 +658,8 @@ function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnI
       <div className={`flex flex-col ${reverse ? 'items-end' : 'items-start'}`}>
         <div style={{ marginBottom: 6 }}>{pillRow}</div>
         <div style={{ position: 'relative' }}>
-          <div style={{ visibility: 'hidden' }}>{handRow}</div>
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ visibility: 'hidden' }}>{handRowEl()}</div>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: reverse ? 'flex-end' : 'flex-start' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {sets.map((g, gi) => winGroupEl(g, gi))}
               {winGroupEl(pair, sets.length)}
@@ -666,7 +673,7 @@ function PlayerArea({ wind, you, reverse, hand, melds, flowers, isActive, drawnI
   return (
     <div className={`flex flex-col ${reverse ? 'items-end' : 'items-start'}`}>
       <div style={{ marginBottom: 6 }}>{pillRow}</div>
-      {handRow}
+      {handRowEl()}
       {meldRow}
     </div>
   );
@@ -699,7 +706,7 @@ export function RoundDemo({ yourSeat, state, breakInfo }: {
   const topWind    = rotateSeat(yourSeat, 2);
   const leftWind   = rotateSeat(yourSeat, 3);
 
-  function pa(wind: WindValue, you?: boolean, reverse?: boolean, topRow?: boolean) {
+  function pa(wind: WindValue, num: number, you?: boolean, reverse?: boolean) {
     const isActive = player === wind;
     const h = hands[wind];
     const isDrawAction = isActive && (current.action === 'draw' || current.action === 'draw-back');
@@ -717,7 +724,7 @@ export function RoundDemo({ yourSeat, state, breakInfo }: {
         isActive={isActive}
         drawnIdx={drawnIdx}
         winGroups={winGroups}
-        topRow={topRow}
+        num={num}
       />
     );
   }
@@ -746,7 +753,7 @@ export function RoundDemo({ yourSeat, state, breakInfo }: {
   }
 
   return (
-    <div className="flex flex-col gap-3 items-center" style={{ position: 'relative' }}>
+    <div className="flex flex-col gap-3 items-center" style={{ position: 'relative', overflow: 'visible' }}>
       {showGameEnd && (
         <div style={{
           position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -765,14 +772,14 @@ export function RoundDemo({ yourSeat, state, breakInfo }: {
       )}
       <div className="grid gap-2" style={{
         gridTemplateAreas: '"tl . tr" ". center ." "bl . br"',
-        gridTemplateColumns: '80px max-content 80px',
-        gridTemplateRows: '80px max-content 80px',
+        gridTemplateColumns: '120px max-content 120px',
+        gridTemplateRows: '120px max-content 120px',
       }}>
-        <div style={{ gridArea: 'tl', marginLeft: '-90px', transform: 'translateY(14px)' }} className="flex flex-col items-start justify-end">
-          {pa(leftWind, false, false, true)}
+        <div style={{ gridArea: 'tl', marginLeft: '-180px', transform: 'translateY(14px)' }} className="flex flex-col items-start justify-end">
+          {pa(leftWind, 4, false, false)}
         </div>
-        <div style={{ gridArea: 'tr', marginRight: '-90px', transform: 'translateY(14px)' }} className="flex flex-col items-end justify-end">
-          {pa(topWind, false, true, true)}
+        <div style={{ gridArea: 'tr', marginRight: '-180px', transform: 'translateY(14px)' }} className="flex flex-col items-end justify-end">
+          {pa(topWind, 3, false, true)}
         </div>
         <div style={{ gridArea: 'center', position: 'relative' }}>
           <MahjongMat size={367}>
@@ -794,11 +801,11 @@ export function RoundDemo({ yourSeat, state, breakInfo }: {
             <div style={{ position: 'absolute', left: '50%', bottom: 72, transform: 'translateX(-50%)', maxWidth: 110 }}>{discardPile(bottomWind)}</div>
           </div>
         </div>
-        <div style={{ gridArea: 'bl', marginLeft: '-90px', transform: 'translateY(-14px)' }} className="flex flex-col items-start justify-start">
-          {pa(bottomWind, true)}
+        <div style={{ gridArea: 'bl', marginLeft: '-180px', transform: 'translateY(-14px)' }} className="flex flex-col items-start justify-start">
+          {pa(bottomWind, 1, true, false)}
         </div>
-        <div style={{ gridArea: 'br', marginRight: '-90px', transform: 'translateY(-14px)' }} className="flex flex-col items-end justify-start">
-          {pa(rightWind, false, true)}
+        <div style={{ gridArea: 'br', marginRight: '-180px', transform: 'translateY(-14px)' }} className="flex flex-col items-end justify-start">
+          {pa(rightWind, 2, false, true)}
         </div>
       </div>
     </div>

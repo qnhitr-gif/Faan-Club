@@ -3,6 +3,36 @@ import type { TileFace } from '@/lib/tiles';
 
 type LooseTile = { suit: string; value: number | string };
 
+// ── Chapter header (matches the pattern used by HandSelectionChapter etc.) ────
+const G800 = '#1c4a2a';
+const INK  = '#16170f';
+
+export function ScoringHeader() {
+  return (
+    <div style={{ paddingTop: 32, paddingBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#b8302a', flexShrink: 0 }} />
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: G800 }}>
+          Chapter 05
+        </span>
+        <div style={{ height: 1, width: 40, background: '#c8d8c9', flexShrink: 0 }} />
+      </div>
+      <h1 style={{
+        fontFamily: 'var(--font-display)',
+        fontSize: 'clamp(32px, 4.5vw, 68px)',
+        fontWeight: 600,
+        lineHeight: 1.0,
+        letterSpacing: '-0.02em',
+        color: INK,
+        margin: '0 0 32px',
+      }}>
+        How to feast in a{' '}
+        <em style={{ fontStyle: 'italic', color: G800 }}>3-point min game.</em>
+      </h1>
+    </div>
+  );
+}
+
 // ── Section layout (two-column sidebar style matching HandSelectionChapter) ──
 
 export function ScoringSection({

@@ -13,10 +13,11 @@ const BASE_TILES = Array.from({ length: TILE_COUNT }, (_, i) => {
   const angle = i * 2 * Math.PI / PHI;
   const maxR = 180 / (Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle)));
   const r = Math.sqrt(i / TILE_COUNT) * maxR;
+  const rot = (Math.sin(i * 47.3 + 13.7) * 43758.5453 % 1) * 180 - 90;
   return {
     x: Math.cos(angle) * r,
     y: Math.sin(angle) * r,
-    r: 0,
+    r: rot,
   };
 });
 
@@ -64,10 +65,11 @@ function TilePile({ animKey, onClick, done }: { animKey: number; onClick: () => 
       const angle = rand(seed) * Math.PI * 2;
       const maxR = 180 / (Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle)));
       const r = Math.sqrt(rand(seed + 1)) * maxR;
+      const rot = (rand(seed + 2) * 2 - 1) * 90;
       return {
         x: Math.cos(angle) * r,
         y: Math.sin(angle) * r,
-        r: 0,
+        r: rot,
       };
     });
   }, [animKey]);
@@ -105,14 +107,14 @@ export function BuildWallsDisplay({ yourSeat, state }: { yourSeat: WindValue; st
 
   if (wallsBuilt) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="relative" style={{ overflow: 'visible' }}>
         <WallsBuiltView yourSeat={yourSeat} />
       </div>
     );
   }
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ overflow: 'visible' }}>
       <PickSeats yourSeat={yourSeat} />
       <TilePile animKey={animKey} onClick={shuffle} done={canBuild} />
     </div>

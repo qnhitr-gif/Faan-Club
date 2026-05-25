@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { listChapters } from '@/lib/chapters';
 
-const BASE = 'https://faanclub.vercel.app';
+const BASE = 'https://faanclub.co';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const chapters = listChapters();

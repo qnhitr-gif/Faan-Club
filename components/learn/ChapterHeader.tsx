@@ -4,10 +4,11 @@
 interface ChapterHeaderProps {
   n: number;
   plain: string;
+  mid?: string;
   italic: string;
 }
 
-export function ChapterHeader({ n, plain, italic }: ChapterHeaderProps) {
+export function ChapterHeader({ n, plain, mid, italic }: ChapterHeaderProps) {
   return (
     <div style={{ paddingTop: 32, marginBottom: 40 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
@@ -19,14 +20,14 @@ export function ChapterHeader({ n, plain, italic }: ChapterHeaderProps) {
       </div>
       <h1 style={{
         fontFamily: 'var(--font-display)',
-        fontSize: 'clamp(44px, 6.5vw, 96px)',
+        fontSize: 'clamp(32px, 4.5vw, 68px)',
         fontWeight: 600,
         lineHeight: 1.0,
         letterSpacing: '-0.02em',
         color: '#16170f',
         marginBottom: 32,
       }}>
-        {plain}{' '}
+        {plain}{mid ? <> {mid}</> : null}{' '}
         <em style={{ fontStyle: 'italic', color: '#1c4a2a' }}>{italic}</em>
       </h1>
     </div>

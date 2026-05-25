@@ -137,7 +137,7 @@ function PlayerArea({
   seat, you, reverse,
   hand, exposed, bonusTiles,
   fan, isActive, isWarning,
-  drawnTile,
+  drawnTile, discardedTile,
 }: {
   seat: GameSeat;
   you?: boolean;
@@ -149,6 +149,7 @@ function PlayerArea({
   isActive: boolean;
   isWarning: boolean;
   drawnTile?: string | null;
+  discardedTile?: string | null;
 }) {
   const pillGlow: React.CSSProperties = isActive
     ? { boxShadow: '0 0 10px rgba(245,158,11,0.8), 0 0 4px rgba(245,158,11,0.5)' }
@@ -208,12 +209,20 @@ function PlayerArea({
   const warningBadge = null;
 
   const handRow = (
-    <div style={{ width: PILL_W, overflow: 'visible', display: 'flex', justifyContent: 'center' }}>
+    <div style={{ width: PILL_W, overflow: 'visible', display: 'flex', justifyContent: reverse ? 'flex-end' : 'flex-start' }}>
       <div className="flex gap-px items-end py-0.5 flex-nowrap">
         {hand.map((ts, i) => {
-          const isDrawn = drawnTile != null && i === hand.length - 1 && ts === drawnTile;
+          const isDrawn     = drawnTile != null && i === hand.length - 1 && ts === drawnTile;
+          // Mark the first occurrence of the discarded tile (not the drawn tile) with red glow
+          const isDiscarded = discardedTile != null && ts === discardedTile &&
+                              !(drawnTile != null && i === hand.length - 1 && ts === drawnTile) &&
+                              !hand.slice(0, i).includes(ts);  // first occurrence only
           return isDrawn ? (
             <div key={i} style={{ marginLeft: 6, flexShrink: 0, transform: 'translateY(-5px)', filter: 'drop-shadow(0 4px 8px rgba(245,158,11,0.7))' }}>
+              <HandTile tileStr={ts} />
+            </div>
+          ) : isDiscarded ? (
+            <div key={i} style={{ flexShrink: 0, transform: 'translateY(-4px)', filter: 'drop-shadow(0 4px 10px rgba(220,38,38,0.85)) drop-shadow(0 0 3px rgba(220,38,38,0.5))' }}>
               <HandTile tileStr={ts} />
             </div>
           ) : <HandTile key={i} tileStr={ts} />;
@@ -251,7 +260,7 @@ function PlayerArea({
 // ─── Discard pile ─────────────────────────────────────────────────────────────
 const DISCARD_SEED: Record<GameSeat, number> = { East: 3, South: 11, West: 17, North: 7 };
 
-function DiscardPile({ seat, tiles }: { seat: GameSeat; tiles: string[] }) {
+function DiscardPile({ seat, tiles, highlightLast }: { seat: GameSeat; tiles: string[]; highlightLast?: boolean }) {
   const seed = DISCARD_SEED[seat];
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
@@ -259,8 +268,15 @@ function DiscardPile({ seat, tiles }: { seat: GameSeat; tiles: string[] }) {
         const rot = ((i * 41 + seed * 13) % 28) - 14;
         const tx  = ((i * 19 + seed *  7) % 10) - 5;
         const ty  = ((i * 29 + seed * 11) %  8) - 4;
+        const isLatest = highlightLast && i === tiles.length - 1;
         return (
-          <div key={i} style={{ flexShrink: 0, transform: `rotate(${rot}deg) translate(${tx}px, ${ty}px)` }}>
+          <div key={i} style={{
+            flexShrink: 0,
+            transform: `rotate(${rot}deg) translate(${tx}px, ${ty}px)`,
+            filter: isLatest ? 'drop-shadow(0 0 5px rgba(220,38,38,0.9)) drop-shadow(0 0 2px rgba(220,38,38,0.6))' : undefined,
+            zIndex: isLatest ? 10 : undefined,
+            position: 'relative',
+          }}>
             <DiscardTile tileStr={ts} />
           </div>
         );
@@ -311,14 +327,30 @@ function StepInfo({ current, step, total }: {
         </div>
 
 
+        {/* Strategy badge */}
+        {current.strategy && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-semibold uppercase tracking-widest text-tertiary" style={{ fontFamily: 'var(--font-mono)' }}>
+              Strategy
+            </span>
+            <span
+              className="inline-block rounded-full px-2 py-0.5 text-[10px] font-medium"
+              style={{ background: 'rgba(28,74,42,0.08)', color: '#1c4a2a', border: '1px solid rgba(28,74,42,0.18)', fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}
+            >
+              {current.strategy}
+            </span>
+          </div>
+        )}
+
         {/* Comment */}
         <p className="text-[11px] text-secondary leading-relaxed">{current.comment}</p>
 
         {/* Discard reason */}
         {current.discardReason && (
-          <p className="text-[11px] text-tertiary leading-relaxed italic">
-            Discard reason: {current.discardReason}
-          </p>
+          <div className="flex gap-1.5 items-start">
+            <span className="text-tertiary mt-0.5 shrink-0" style={{ fontSize: 10 }}>→</span>
+            <p className="text-[11px] text-tertiary leading-relaxed">{current.discardReason}</p>
+          </div>
         )}
 
         {/* Win breakdown */}
@@ -514,9 +546,14 @@ export function GamePlayer({
   }, [isLast]);
   const { hands, exposed, discards, bonus, fan, who, action } = current;
 
-  // Append the current discard to that player's pile so it shows immediately
+  // Append the current discard to that player's pile so it shows immediately.
+  // Exception: if the tile is still present in the player's hand (discard-highlight step),
+  // don't add to the pile yet — it will appear there naturally in the next step.
   function pilesWithCurrent(): Record<GameSeat, string[]> {
     if (current.discarded && who && (action === 'draw-discard' || action === 'claim')) {
+      if (action === 'draw-discard' && hands[who]?.includes(current.discarded)) {
+        return discards; // tile still in hand — pile unchanged
+      }
       return { ...discards, [who]: [...discards[who], current.discarded] };
     }
     return discards;
@@ -535,6 +572,10 @@ export function GamePlayer({
     const isActive = who === seat;
     const isWarning = current.warning && who === seat;
     const drawnTile = (action === 'draw-discard' && isActive && current.drew) ? current.drew : null;
+    // Show red glow on the discarded tile while it's still in hand (discard-highlight step)
+    const discardedTile = (action === 'draw-discard' && isActive && !current.drew && current.discarded
+                           && hands[seat]?.includes(current.discarded))
+                          ? current.discarded : null;
     return {
       seat, you, reverse,
       hand: sortHandForDisplay(hands[seat], drawnTile),
@@ -547,27 +588,33 @@ export function GamePlayer({
       isActive,
       isWarning,
       drawnTile,
+      discardedTile,
     };
   }
 
   return (
     <div className="flex flex-col gap-4">
       {/* Table + sidebar */}
-      <div className="rounded-lg bg-elev hairline-strong border px-6 pt-10 pb-6 flex flex-col md:flex-row gap-6 items-start">
+      <div className="rounded-lg bg-elev hairline-strong border px-6 pt-10 pb-6 flex flex-col md:flex-row gap-6 items-start" style={{ overflow: 'visible' }}>
         {/* Table */}
-        <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex flex-col gap-3 items-center" style={{ position: 'relative' }}>
+        <div className="flex-1 min-w-0 w-full md:w-auto" style={{ overflow: 'visible' }}>
+          {/* Eyebrow */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#b8302a', display: 'inline-block', flexShrink: 0 }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#7a7a6a' }}>Table wind: East · Scripted round</span>
+          </div>
+          <div className="flex flex-col gap-3 items-center" style={{ position: 'relative', overflow: 'visible' }}>
             <div className="grid gap-2" style={{
               gridTemplateAreas: '"tl . tr" ". center ." "bl . br"',
-              gridTemplateColumns: '80px max-content 80px',
-              gridTemplateRows: '80px max-content 80px',
+              gridTemplateColumns: '120px max-content 120px',
+              gridTemplateRows: '120px max-content 120px',
             }}>
               {/* Left player */}
-              <div style={{ gridArea: 'tl', marginLeft: '-90px', transform: 'translateY(14px)' }} className="flex flex-col items-start justify-end">
+              <div style={{ gridArea: 'tl', marginLeft: '-170px', transform: 'translateY(14px)' }} className="flex flex-col items-start justify-end">
                 <PlayerArea {...playerAreaProps(leftSeat, false, false)} />
               </div>
               {/* Top player */}
-              <div style={{ gridArea: 'tr', marginRight: '-90px', transform: 'translateY(14px)' }} className="flex flex-col items-end justify-end">
+              <div style={{ gridArea: 'tr', marginRight: '-170px', transform: 'translateY(14px)' }} className="flex flex-col items-end justify-end">
                 <PlayerArea {...playerAreaProps(topSeat, false, true)} />
               </div>
 
@@ -585,27 +632,35 @@ export function GamePlayer({
                   width: MAT_SIZE, height: MAT_SIZE,
                   pointerEvents: 'none',
                 }}>
+                  {(() => {
+                    // Highlight the freshly discarded tile — only on discard-only steps
+                    // (drew is null, discarded is set). This is the second half of a split turn.
+                    const discardSeat = (!current.drew && current.discarded && action === 'draw-discard') ? who : null;
+                    const hl = (s: GameSeat) => s === discardSeat;
+                    return (<>
                   <div style={{ position: 'absolute', left: '50%', top: 72, transform: 'translateX(-50%)', maxWidth: 110 }}>
-                    <DiscardPile seat={topSeat} tiles={piles[topSeat]} />
+                    <DiscardPile seat={topSeat} tiles={piles[topSeat]} highlightLast={hl(topSeat)} />
                   </div>
                   <div style={{ position: 'absolute', top: '50%', left: 60, transform: 'translateY(-50%)', maxWidth: 110 }}>
-                    <DiscardPile seat={leftSeat} tiles={piles[leftSeat]} />
+                    <DiscardPile seat={leftSeat} tiles={piles[leftSeat]} highlightLast={hl(leftSeat)} />
                   </div>
                   <div style={{ position: 'absolute', top: '50%', right: 60, transform: 'translateY(-50%)', maxWidth: 110 }}>
-                    <DiscardPile seat={rightSeat} tiles={piles[rightSeat]} />
+                    <DiscardPile seat={rightSeat} tiles={piles[rightSeat]} highlightLast={hl(rightSeat)} />
                   </div>
                   <div style={{ position: 'absolute', left: '50%', bottom: 72, transform: 'translateX(-50%)', maxWidth: 110 }}>
-                    <DiscardPile seat={bottomSeat} tiles={piles[bottomSeat]} />
+                    <DiscardPile seat={bottomSeat} tiles={piles[bottomSeat]} highlightLast={hl(bottomSeat)} />
                   </div>
+                    </>);
+                  })()}
                 </div>
               </div>
 
               {/* Bottom player (you) */}
-              <div style={{ gridArea: 'bl', marginLeft: '-90px', transform: 'translateY(-40px)' }} className="flex flex-col items-start justify-start">
+              <div style={{ gridArea: 'bl', marginLeft: '-170px', transform: 'translateY(-14px)' }} className="flex flex-col items-start justify-start">
                 <PlayerArea {...playerAreaProps(bottomSeat, true, false)} />
               </div>
               {/* Right player */}
-              <div style={{ gridArea: 'br', marginRight: '-90px', transform: 'translateY(-40px)' }} className="flex flex-col items-end justify-start">
+              <div style={{ gridArea: 'br', marginRight: '-170px', transform: 'translateY(-14px)' }} className="flex flex-col items-end justify-start">
                 <PlayerArea {...playerAreaProps(rightSeat, false, true)} />
               </div>
             </div>

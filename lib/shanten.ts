@@ -10,8 +10,8 @@
  *
  * Returns -1 for a complete hand, 0 for tenpai, N for N tiles away.
  *
- * Algorithm ported from Euophrys/Riichi-Trainer (MIT) and adapted for
- * Hong Kong mahjong: no red fives, no chiitoitsu, no kokushi.
+ * Includes 七對 (Seven Pairs) path, which is valid in HK mahjong.
+ * Algorithm based on Euophrys/Riichi-Trainer (MIT), adapted for HK rules.
  */
 
 export type TileCounts = number[]; // length 34
@@ -23,11 +23,20 @@ function sumFrom(t: TileCounts, from: number): number {
   return n;
 }
 
+/** Seven Pairs (七對) shanten: 6 - number of unique pairs in hand. */
+function sevenPairsShanten(tiles: TileCounts): number {
+  let pairs = 0;
+  for (let i = 0; i < 34; i++) {
+    if (tiles[i] >= 2) pairs++;
+  }
+  return 6 - pairs;
+}
+
 export function calculateShanten(tiles: TileCounts): number {
   const t = tiles.slice();
   let best = 8;
 
-  // Try each tile as the pair head
+  // Try each tile as the pair head (standard hand)
   for (let i = 0; i < 34; i++) {
     if (t[i] < 2) continue;
     t[i] -= 2;
@@ -35,8 +44,12 @@ export function calculateShanten(tiles: TileCounts): number {
     t[i] += 2;
   }
 
-  // No pair
+  // No pair (standard hand)
   best = Math.min(best, removeCompletedSets(t, 0, 0, best, false));
+
+  // Seven Pairs path (七對) — valid in HK mahjong
+  best = Math.min(best, sevenPairsShanten(tiles));
+
   return best;
 }
 

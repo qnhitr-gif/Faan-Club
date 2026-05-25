@@ -51,14 +51,14 @@ function Hero() {
         </span>
         <div style={{ height: 1, width: 40, background: '#c8d8c9', flexShrink: 0 }} />
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1c4a2a', opacity: 0.5 }}>
-          第一章 · 入門
+          Introduction
         </span>
       </div>
 
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(44px, 6.5vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-0.02em', color: '#16170f', margin: '0 0 28px' }}>
-        Welcome to
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(32px, 4.5vw, 68px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-0.02em', color: '#16170f', margin: '0 0 28px' }}>
+        Congrats, you just got
         <br />
-        <em style={{ fontStyle: 'italic', color: '#1c4a2a' }}>the table.</em>
+        <em style={{ fontStyle: 'italic', color: '#1c4a2a' }}>a seat at the table.</em>
       </h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'end' }}>

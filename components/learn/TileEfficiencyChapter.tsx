@@ -432,7 +432,7 @@ export function TileEfficiencyChapter() {
           </span>
           <div style={{ height: 1, width: 40, background: G200, flexShrink: 0 }} />
         </div>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(44px, 6.5vw, 96px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-0.02em', color: INK, margin: '0 0 32px' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(32px, 4.5vw, 68px)', fontWeight: 600, lineHeight: 1.0, letterSpacing: '-0.02em', color: INK, margin: '0 0 32px' }}>
           The discard <em style={{ fontStyle: 'italic', color: G800 }}>decision.</em>
         </h1>
         <p style={{ maxWidth: 760, fontFamily: 'var(--font-serif)', fontSize: 18, lineHeight: 1.65, color: INK2, margin: 0 }}>

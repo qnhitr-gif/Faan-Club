@@ -192,7 +192,7 @@ export function TurnLoop() {
             The setup process is easier to grasp in motion than in words. The{' '}
             <strong style={{ fontWeight: 600, color: INK }}>interactive room</strong>{' '}
             walks you through every step — seat selection, dice roll, wall break, and deal — one click at a time.{' '}
-            <a href="/kitchen/setup" style={{ color: G7, textDecoration: 'underline', textUnderlineOffset: 3 }}>
+            <a href="/kitchen/games" style={{ color: G7, textDecoration: 'underline', textUnderlineOffset: 3 }}>
               Go to the interactive room →
             </a>
           </p>

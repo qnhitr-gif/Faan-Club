@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { listChapters, ChapterMeta } from '@/lib/chapters';
+
+export const metadata: Metadata = {
+  title: 'Hong Kong Mahjong Rules & Strategy | Faan Club',
+  description: '14 chapters from your first game to advanced strategy. Learn Hong Kong mahjong at your own pace.',
+};
 
 /* ── Tokens ───────────────────────────────────────────────────────────────── */
 const G800 = '#1c4a2a';

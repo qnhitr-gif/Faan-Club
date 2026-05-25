@@ -60,7 +60,7 @@ export function MahjongMat({ size, children, className = '' }: Props) {
         <circle cx={100} cy={100} r={1.6} fill={ACCENT} opacity={0.4} />
       </svg>
 
-      {children && <div className="relative h-full w-full">{children}</div>}
+      {children && <div className="relative h-full w-full flex items-center justify-center">{children}</div>}
     </div>
   );
 }

@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Learn Hong Kong Mahjong — Free Guide | Faan Club',
+  description: 'A patient guide to Hong Kong mahjong, taught at the table. 14 chapters from beginner to advanced.',
+};
 
 /* ── shared tokens ─────────────────────────────────────────────────────────── */
 const R  = '#b8302a';       // red accent

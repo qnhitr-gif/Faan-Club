@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Faan Club — HK Mahjong Learning Guide',
+  description: 'The story behind Faan Club — a patient guide to Hong Kong mahjong.',
+};
+
 export default function AboutPage() {
   return (
     <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
