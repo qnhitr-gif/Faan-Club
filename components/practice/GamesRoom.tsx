@@ -97,24 +97,6 @@ function AutoPlayGame({ mode, userId }: { mode: '0pt' | '3pt'; userId?: string |
   return (
     <div>
       <GamePlayer state={state} yourSeat={seat} />
-      <div className="mt-4 rounded-lg bg-elev hairline border p-4 flex flex-wrap gap-6">
-        <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-tertiary mb-1" style={{ fontFamily: 'var(--font-mono)' }}>Pattern</div>
-          <div className="font-serif text-[15px] text-primary">{meta.pattern}</div>
-        </div>
-        <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-tertiary mb-1" style={{ fontFamily: 'var(--font-mono)' }}>Faan</div>
-          <div className="font-serif text-[15px] text-brand-green font-medium">{meta.fan} faan</div>
-        </div>
-        <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-tertiary mb-1" style={{ fontFamily: 'var(--font-mono)' }}>Winner</div>
-          <div className="font-serif text-[15px] text-primary">{meta.winner}</div>
-        </div>
-        <div>
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-tertiary mb-1" style={{ fontFamily: 'var(--font-mono)' }}>Breakdown</div>
-          <div className="font-serif text-[13px] text-secondary">{meta.breakdown}</div>
-        </div>
-      </div>
     </div>
   );
 }
