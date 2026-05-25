@@ -357,6 +357,8 @@ function StepInfo({ current, step, total }: {
 }
 
 // ─── GameLog sidebar ──────────────────────────────────────────────────────────
+const CN_WIND_GAME: Record<GameSeat, string> = { East: '東', South: '南', West: '西', North: '北' };
+
 function GameLog({ steps, currentStep, isFirst, isLast, onNext, onPrev, onReset, replayLocked }: {
   steps: GameStep[];
   currentStep: number;
@@ -367,54 +369,88 @@ function GameLog({ steps, currentStep, isFirst, isLast, onNext, onPrev, onReset,
   onReset: () => void;
   replayLocked?: boolean;
 }) {
-  const SEAT_SHORT: Record<GameSeat, string> = { East: 'E', South: 'S', West: 'W', North: 'N' };
-  const entries = steps
-    .slice(0, currentStep + 1)
-    .filter(e => !isPassStep(e))
-    .map((e, idx) => ({ entry: e, stepNum: idx }));
+  const listEndRef = React.useRef<HTMLDivElement>(null);
+
+  const nonPassSteps = steps.filter(e => !isPassStep(e));
+  const visibleSteps = nonPassSteps.slice(0, currentStep + 1);
+  const current = visibleSteps[visibleSteps.length - 1];
+  const pastSteps = visibleSteps.slice(0, -1);
+  const total = nonPassSteps.length;
+  const displayStep = visibleSteps.length - 1;
+
+  React.useEffect(() => {
+    listEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [currentStep]);
 
   return (
     <div className="flex flex-col min-h-0 flex-1">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-tertiary mb-1.5">Game log</div>
-      <div className="flex-1 overflow-y-auto min-h-0 flex flex-col-reverse gap-0.5">
-        {[...entries].reverse().map(({ entry, stepNum }, i) => {
-          const isCurrent = i === 0;
-          return (
-            <div key={stepNum}
-              className={`px-2 py-1.5 rounded text-[11px] leading-snug ${isCurrent ? 'bg-brand-green/10' : ''}`}>
-              <div className={`text-[10px] leading-snug ${isCurrent ? 'text-primary' : 'text-secondary'}`}>
-                <span className="font-medium text-tertiary">{stepNum} </span>
-                {entry.action === 'setup' && <span>Game starts</span>}
-                {entry.action === 'draw-discard' && entry.who && (
-                  <span>
-                    <span className="font-medium">{entry.who}</span>
-                    {entry.drew && <> draws <span className="text-brand-green font-medium">{entry.drew}</span></>}
-                    {entry.discarded && <> discards <span className="text-brand-inkRed font-medium">{entry.discarded}</span></>}
-                  </span>
-                )}
-                {entry.action === 'claim' && entry.who && entry.claimed && (
-                  <span>
-                    <span className="font-medium">{entry.who}</span>
-                    {' claims '}
-                    <span className="text-amber-500 font-medium">{entry.claimed.tile}</span>
-                    {entry.discarded && <> discards <span className="text-brand-inkRed font-medium">{entry.discarded}</span></>}
-                  </span>
-                )}
-                {entry.action === 'win' && entry.who && (
-                  <span>
-                    <span className="font-medium">{entry.who}</span>
-                    {' wins · '}
-                    <span className="text-brand-green font-semibold">{entry.total} fan</span>
-                  </span>
-                )}
-              </div>
-            </div>
-          );
-        })}
+
+      {/* Header: Game log + step counter */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9d9d8a' }}>Game log</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9d9d8a' }}>
+          Step {String(displayStep).padStart(2, '0')} / {String(total - 1).padStart(2, '0')}
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ height: 2, background: 'rgba(28,74,42,0.1)', borderRadius: 1, marginBottom: 14, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${(displayStep / Math.max(total - 1, 1)) * 100}%`, background: '#1c4a2a', borderRadius: 1, transition: 'width 0.3s ease' }} />
+      </div>
+
+      {/* Current step card */}
+      {current && (
+        <div style={{ background: 'rgba(28,74,42,0.06)', borderRadius: 10, padding: '12px 14px', marginBottom: 14, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+            {current.who && (
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 7px', borderRadius: 4, background: '#1c4a2a', color: '#faf6ec' }}>
+                {current.who}
+              </span>
+            )}
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9d9d8a' }}>
+              Step {String(displayStep).padStart(2, '0')}
+            </span>
+          </div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 17, fontWeight: 600, lineHeight: 1.25, color: '#16170f', marginBottom: current.comment ? 8 : 0 }}>
+            {current.headline}
+          </div>
+          {current.comment && (
+            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: 13, lineHeight: 1.6, color: '#44463a', margin: 0 }}>
+              {current.comment}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Steps label */}
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#9d9d8a', marginBottom: 6, flexShrink: 0 }}>
+        Steps
+      </div>
+
+      {/* Scrollable past steps */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        {pastSteps.map((entry, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+            padding: '7px 0',
+            borderBottom: i < pastSteps.length - 1 ? '1px dashed rgba(28,74,42,0.13)' : 'none',
+          }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#b0b09a', minWidth: 18, paddingTop: 2, flexShrink: 0 }}>
+              {String(i).padStart(2, '0')}
+            </span>
+            <span style={{ fontFamily: "'Noto Serif SC', 'Noto Serif CJK SC', serif", fontSize: 13, fontWeight: 700, color: '#b0b09a', minWidth: 18, lineHeight: 1, paddingTop: 2, flexShrink: 0 }}>
+              {entry.who ? CN_WIND_GAME[entry.who as GameSeat] ?? '' : ''}
+            </span>
+            <span style={{ fontFamily: 'var(--font-serif)', fontSize: 12, color: '#7a7a6a', lineHeight: 1.5 }}>
+              {entry.headline}
+            </span>
+          </div>
+        ))}
+        <div ref={listEndRef} />
       </div>
 
       {/* Navigation buttons */}
-      <div className="flex gap-2 pt-2 mt-2 border-t border-brand-green/20 shrink-0">
+      <div className="shrink-0 pt-3 mt-3 border-t border-brand-green/20 flex gap-2">
         <button
           type="button"
           onClick={onPrev}
@@ -436,9 +472,10 @@ function GameLog({ steps, currentStep, isFirst, isLast, onNext, onPrev, onReset,
           <button
             type="button"
             onClick={onNext}
-            className="flex-1 px-2 py-1.5 rounded-md bg-brand-green text-brand-cream text-[11px] font-medium hover:bg-brand-greenDeep"
+            style={{ background: '#1c4a2a', color: '#faf6ec', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}
+            className="flex-1 px-2 py-1.5 rounded-md text-[11px] font-medium"
           >
-            Next →
+            Continue
           </button>
         )}
       </div>
